@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Трекер привычек</string>
+    <string name="add_habit">Добавить привычку</string>
+    <string name="add_new_habit_title">Добавить новую привычку</string>
+    <string name="edit_habit_title">Редактировать привычку</string>
+    <string name="habit_name_hint">Название</string>
+    <string name="habit_description_hint">Описание</string>
+    <string name="habit_priority_good">Хорошая</string>
+    <string name="habit_priority_bad">Плохая</string>
+    <string name="habit_times_to_complete_hint">Количество выполнений</string>
+    <string name="habit_frequency_in_days_hint">Периодичность в днях</string>
+    <string name="habit_save_button">Сохранить</string>
+</resources>

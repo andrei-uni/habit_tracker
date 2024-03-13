@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Habit Tracker</string>
+    <string name="add_habit">Add Habit</string>
+    <string name="add_new_habit_title">Add New Habit</string>
+    <string name="edit_habit_title">Edit Habit</string>
+    <string name="habit_name_hint">Name</string>
+    <string name="habit_description_hint">Description</string>
+    <string name="habit_priority_good">Good</string>
+    <string name="habit_priority_bad">Bad</string>
+    <string name="habit_times_to_complete_hint">Times to complete</string>
+    <string name="habit_frequency_in_days_hint">Frequency in days</string>
+    <string name="habit_save_button">Save</string>
+
+    <string-array name="habit_priorities">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+
+</resources>
