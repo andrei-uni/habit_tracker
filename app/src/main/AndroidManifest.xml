@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name=".presentation.HabitAddActivity"
+            android:name=".presentation.habit_add.HabitAddActivity"
             android:parentActivityName=".presentation.habits_list.HabitsListActivity"
             android:exported="false">
         </activity>

@@ -3,55 +3,61 @@ package com.example.myapplication.presentation.habits_list
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.databinding.HabitItemViewBinding
 import com.example.myapplication.models.Habit
 
+typealias onClick = (habit: Habit) -> Unit
 
 class HabitsListAdapter(
     private val habits: List<Habit>,
-    private val onClick: (position: Int, habit: Habit) -> Unit,
+    private val onClick: onClick,
 ) : RecyclerView.Adapter<HabitsListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(inflater.inflate(R.layout.habit_item_view, parent, false))
+        val binding = HabitItemViewBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return ViewHolder(binding, onClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = habits[position]
         holder.bind(item)
-        holder.itemView.setOnClickListener {
-            onClick(position, item)
-        }
     }
 
     override fun getItemCount(): Int = habits.size
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        private val nameText: TextView = itemView.findViewById(R.id.name)
-        private val descriptionText: TextView = itemView.findViewById(R.id.description)
-        private val priorityText: TextView = itemView.findViewById(R.id.priority)
-        private val typeText: TextView = itemView.findViewById(R.id.type)
-        private val frequencyText: TextView = itemView.findViewById(R.id.frequency)
-        private val colorCircleView: View = itemView.findViewById(R.id.color_circle)
+    class ViewHolder(
+        private val binding: HabitItemViewBinding,
+        private val onClick: onClick,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(habit: Habit) {
-            nameText.text = habit.name
-            descriptionText.text = habit.description
-            priorityText.text = "Priority: ${habit.priority}"
-            typeText.text = habit.type.toString()
-            frequencyText.text = "Once in days: ${habit.frequencyInDays}"
+            itemView.setOnClickListener { onClick(habit) }
 
-            colorCircleView.background = GradientDrawable().apply {
-                cornerRadius = 24f
-                shape = GradientDrawable.OVAL
-                setStroke(3, Color.GRAY)
-                setColor(habit.color)
+            val context = binding.root.context
+            with(binding) {
+                name.text = habit.name
+                description.text = habit.description
+                priority.text = run {
+                    val priority = context.getString(habit.priority.resId)
+                    context.getString(R.string.habit_priority, priority)
+                }
+                type.text = run {
+                    val type = context.getString(habit.type.resId)
+                    context.getString(R.string.habit_type, type)
+                }
+                frequency.text = context.getString(R.string.once_in_days, habit.frequencyInDays.toString())
+
+                colorCircle.background = GradientDrawable().apply {
+                    cornerRadius = 24f
+                    shape = GradientDrawable.OVAL
+                    setStroke(3, Color.GRAY)
+                    setColor(habit.color)
+                }
             }
         }
     }
