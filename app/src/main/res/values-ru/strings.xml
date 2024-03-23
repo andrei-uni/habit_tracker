@@ -17,10 +17,22 @@
     <string name="habit_type_bad">Плохая</string>
     <string name="habit_type">Тип: %1$s</string>
     <string name="once_in_days">Каждые дней: %1$s</string>
+    <string name="open_drawer">Открыть шторку</string>
+    <string name="close_drawer">Закрыть шторку</string>
+    <string name="about_this_app">О приложении</string>
+    <string name="home_drawer_item">Домой</string>
+    <string name="about_app_drawer_item">О приложении</string>
+    <string name="app_version">Версия приложения: %1$s</string>
 
     <string-array name="habit_priorities">
         <item>@string/habit_priority_low</item>
         <item>@string/habit_priority_medium</item>
         <item>@string/habit_priority_high</item>
     </string-array>
+
+    <string-array name="home_screen_view_pager_titles">
+        <item>Хорошие</item>
+        <item>Плохие</item>
+    </string-array>
+
 </resources>

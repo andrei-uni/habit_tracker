@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitItemViewBinding
@@ -12,28 +14,30 @@ import com.example.myapplication.models.Habit
 typealias onClick = (habit: Habit) -> Unit
 
 class HabitsListAdapter(
-    private val habits: List<Habit>,
     private val onClick: onClick,
 ) : RecyclerView.Adapter<HabitsListAdapter.ViewHolder>() {
 
+    private lateinit var binding: HabitItemViewBinding
+
+    fun setHabits(habits: List<Habit>) {
+        asyncListDiffer.submitList(habits)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = HabitItemViewBinding.inflate(
+        binding = HabitItemViewBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return ViewHolder(binding, onClick)
+        return ViewHolder(onClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = habits[position]
+        val item = asyncListDiffer.currentList[position]
         holder.bind(item)
     }
 
-    override fun getItemCount(): Int = habits.size
+    override fun getItemCount(): Int = asyncListDiffer.currentList.size
 
-    class ViewHolder(
-        private val binding: HabitItemViewBinding,
-        private val onClick: onClick,
-    ) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val onClick: onClick) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(habit: Habit) {
             itemView.setOnClickListener { onClick(habit) }
@@ -61,4 +65,16 @@ class HabitsListAdapter(
             }
         }
     }
+
+    private val diffCallback = object : DiffUtil.ItemCallback<Habit>() {
+        override fun areItemsTheSame(oldItem: Habit, newItem: Habit): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Habit, newItem: Habit): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val asyncListDiffer = AsyncListDiffer(this, diffCallback)
 }

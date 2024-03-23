@@ -16,11 +16,22 @@
     <string name="habit_type_bad">Bad</string>
     <string name="habit_type">Type: %1$s</string>
     <string name="once_in_days">Once in days: %1$s</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="close_drawer">Close Drawer</string>
+    <string name="about_this_app">About This App</string>
+    <string name="home_drawer_item">Home</string>
+    <string name="about_app_drawer_item">About</string>
+    <string name="app_version">App Version: %1$s</string>
 
     <string-array name="habit_priorities">
         <item>@string/habit_priority_low</item>
         <item>@string/habit_priority_medium</item>
         <item>@string/habit_priority_high</item>
+    </string-array>
+
+    <string-array name="home_screen_view_pager_titles">
+        <item>Good</item>
+        <item>Bad</item>
     </string-array>
 
 </resources>
