@@ -11,14 +11,15 @@ import com.example.myapplication.databinding.AboutFragmentBinding
 
 class AboutFragment : Fragment() {
 
-    private lateinit var binding: AboutFragmentBinding
+    private var _binding: AboutFragmentBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = AboutFragmentBinding.inflate(layoutInflater)
+        _binding = AboutFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -26,5 +27,10 @@ class AboutFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.appVersion.text = getString(R.string.app_version, BuildConfig.VERSION_NAME)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

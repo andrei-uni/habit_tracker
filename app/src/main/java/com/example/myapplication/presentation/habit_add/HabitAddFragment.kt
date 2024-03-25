@@ -30,7 +30,8 @@ import kotlin.properties.Delegates
 
 class HabitAddFragment : Fragment() {
 
-    private lateinit var binding: HabitAddFragmentBinding
+    private var _binding: HabitAddFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val args: HabitAddFragmentArgs by navArgs()
 
@@ -41,7 +42,7 @@ class HabitAddFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = HabitAddFragmentBinding.inflate(layoutInflater)
+        _binding = HabitAddFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -189,5 +190,10 @@ class HabitAddFragment : Fragment() {
         }
 
         findNavController().popBackStack()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

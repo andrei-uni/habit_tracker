@@ -21,7 +21,6 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_habit_fab"
         android:src="@drawable/ic_add"
-        app:tint="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"

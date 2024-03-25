@@ -9,7 +9,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.data.HabitsRepository
 import com.example.myapplication.databinding.HomeFragmentBinding
-import com.example.myapplication.models.Habit
 import com.example.myapplication.models.HabitType
 import com.example.myapplication.presentation.habits_list.HabitsListFragment
 import com.google.android.material.tabs.TabLayoutMediator
@@ -18,11 +17,12 @@ val habitsRepository = HabitsRepository()
 
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: HomeFragmentBinding
+    private var _binding: HomeFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val viewPagerFragments = listOf(
-        HabitsListFragment({ it.type == HabitType.GOOD }) { onHabitClicked(it) },
-        HabitsListFragment({ it.type == HabitType.BAD }) { onHabitClicked(it) },
+        HabitsListFragment.newInstance(HabitType.GOOD),
+        HabitsListFragment.newInstance(HabitType.BAD),
     )
 
     override fun onCreateView(
@@ -30,7 +30,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = HomeFragmentBinding.inflate(layoutInflater)
+        _binding = HomeFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -50,16 +50,13 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun onHabitClicked(habit: Habit) {
-        navigateToHabitAdd(habit)
-    }
-
     private fun onFabClicked() {
-        navigateToHabitAdd()
+        val directions = HomeFragmentDirections.navigateToHabitAdd(null)
+        findNavController().navigate(directions)
     }
 
-    private fun navigateToHabitAdd(habit: Habit? = null) {
-        val directions = HomeFragmentDirections.navigateToHabitAdd(habit)
-        findNavController().navigate(directions)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
