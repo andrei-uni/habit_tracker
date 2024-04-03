@@ -22,6 +22,12 @@
     <string name="home_drawer_item">Home</string>
     <string name="about_app_drawer_item">About</string>
     <string name="app_version">App Version: %1$s</string>
+    <string name="search_habits">Search Habits</string>
+    <string name="habit_sort_order_new">Newest First</string>
+    <string name="habit_sort_order_old">Oldest First</string>
+    <string name="habit_sort_creation_date">Sort by creation date</string>
+    <string name="search">Search</string>
+    <string name="priority">Priority</string>
 
     <string-array name="habit_priorities">
         <item>@string/habit_priority_low</item>

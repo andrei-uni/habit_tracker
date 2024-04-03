@@ -9,24 +9,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.RadioButton
 import android.widget.RelativeLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat.getDrawable
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitAddFragmentBinding
-import com.example.myapplication.models.Habit
-import com.example.myapplication.models.HabitPriority
-import com.example.myapplication.models.HabitType
-import com.example.myapplication.presentation.home.habitsRepository
+import com.example.myapplication.domain.models.HabitPriority
+import com.example.myapplication.domain.models.HabitType
 import com.example.myapplication.utils.isInt
 import kotlin.math.pow
-import kotlin.properties.Delegates
 
 class HabitAddFragment : Fragment() {
 
@@ -35,7 +36,19 @@ class HabitAddFragment : Fragment() {
 
     private val args: HabitAddFragmentArgs by navArgs()
 
-    private var pickedColor by Delegates.notNull<Int>()
+    private lateinit var viewModel: HabitAddViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val vm = HabitAddViewModel(args.habit).apply {
+                    setHabit()
+                }
+                return vm as T
+            }
+        })[HabitAddViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,9 +59,8 @@ class HabitAddFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onResume() {
+        super.onResume()
         val passedHabit = args.habit
 
         (activity as AppCompatActivity).supportActionBar?.apply {
@@ -57,20 +69,104 @@ class HabitAddFragment : Fragment() {
                 else R.string.edit_habit_title
             )
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        with(viewModel) {
+            name.observe(viewLifecycleOwner) {
+                binding.nameEdittext.setText(it)
+                binding.nameEdittext.setSelection(it.length)
+            }
+
+            description.observe(viewLifecycleOwner) {
+                binding.descriptionEdittext.setText(it)
+                binding.descriptionEdittext.setSelection(it.length)
+            }
+
+            priority.observe(viewLifecycleOwner) {
+                binding.prioritySpinner.setSelection(HabitPriority.entries.indexOf(it))
+            }
+
+            type.observe(viewLifecycleOwner) {
+                val radioButton = binding.typeRadiogroup.getChildAt(HabitType.entries.indexOf(it)) as RadioButton
+                radioButton.isChecked = true
+            }
+
+            timesToComplete.observe(viewLifecycleOwner) {
+                if (!it.isInt()) return@observe
+                if (it.toInt() != 0) {
+                    binding.timesToCompleteEdittext.setText(it.toString())
+                    binding.timesToCompleteEdittext.setSelection(it.toString().length)
+                }
+            }
+
+            frequency.observe(viewLifecycleOwner) {
+                if (!it.isInt()) return@observe
+                if (it.toInt() != 0) {
+                    binding.frequencyEdittext.setText(it.toString())
+                    binding.frequencyEdittext.setSelection(it.toString().length)
+                }
+            }
+
+            color.observe(viewLifecycleOwner) {
+                setPickedColor(it)
+            }
+
+            isFormValid.observe(viewLifecycleOwner) {
+                binding.saveButton.isEnabled = it
+            }
+
+            isFinished.observe(viewLifecycleOwner) {
+                findNavController().popBackStack()
+            }
+        }
 
         with(binding) {
             timesToCompleteEdittext.transformationMethod = null
             frequencyEdittext.transformationMethod = null
 
-            saveButton.setOnClickListener { saveClicked() }
+            saveButton.setOnClickListener { viewModel.savePressed() }
+
+            nameEdittext.doOnTextChanged { text, _, _, _ ->
+                viewModel.nameChanged(text.toString())
+            }
+
+            descriptionEdittext.doOnTextChanged { text, _, _, _ ->
+                viewModel.descriptionChanged(text.toString())
+            }
+
+            prioritySpinner.onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    viewModel.priorityChanged(HabitPriority.entries[position])
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
+            typeRadiogroup.setOnCheckedChangeListener { group, checkedId ->
+                val selectedItemIndex = group.run {
+                    indexOfChild(findViewById(checkedId))
+                }
+                viewModel.typeChanged(HabitType.entries[selectedItemIndex])
+            }
+
+            timesToCompleteEdittext.doOnTextChanged { text, _, _, _ ->
+                viewModel.timesToCompleteChanged(text.toString())
+            }
+
+            frequencyEdittext.doOnTextChanged { text, _, _, _ ->
+                viewModel.frequencyChanged(text.toString())
+            }
         }
 
-        pickedColor = passedHabit?.color ?: requireActivity().getColor(R.color.default_picked_color)
-
         createColorPicker()
-
-        setFieldValues(passedHabit ?: Habit.empty)
-        setPickedColor()
     }
 
     private fun createColorPicker() {
@@ -88,11 +184,12 @@ class HabitAddFragment : Fragment() {
         val borderDrawable = getDrawable(resources, R.drawable.border, activity?.theme)!!
 
         repeat(squaresCount) {
-            val squareView = View(activity)
-            squareView.layoutParams = RelativeLayout.LayoutParams(squareSize, squareSize).apply {
-                marginStart = squareMargin
-                if (it == squaresCount - 1) {
-                    marginEnd = squareMargin
+            val squareView = View(activity).apply {
+                layoutParams = RelativeLayout.LayoutParams(squareSize, squareSize).apply {
+                    marginStart = squareMargin
+                    if (it == squaresCount - 1) {
+                        marginEnd = squareMargin
+                    }
                 }
             }
 
@@ -100,11 +197,11 @@ class HabitAddFragment : Fragment() {
             val color = gradientBitmap.getPixel(x, 0)
             val colorDrawable = ColorDrawable(color)
 
-            squareView.background = LayerDrawable(arrayOf(colorDrawable, borderDrawable))
-
-            squareView.setOnClickListener {
-                pickedColor = color
-                setPickedColor()
+            squareView.apply {
+                background = LayerDrawable(arrayOf(colorDrawable, borderDrawable))
+                setOnClickListener {
+                    viewModel.colorChanged(color)
+                }
             }
 
             binding.colorPickerLinearlayout.addView(squareView)
@@ -112,10 +209,10 @@ class HabitAddFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setPickedColor() {
-        val r = Color.red(pickedColor)
-        val g = Color.green(pickedColor)
-        val b = Color.blue(pickedColor)
+    private fun setPickedColor(color: Int) {
+        val r = Color.red(color)
+        val g = Color.green(color)
+        val b = Color.blue(color)
 
         val hsv = floatArrayOf(0f, 0f, 0f)
         Color.RGBToHSV(r, g, b, hsv)
@@ -126,70 +223,10 @@ class HabitAddFragment : Fragment() {
         }
 
         with(binding) {
-            pickedColorIndicator.setBackgroundColor(pickedColor)
+            pickedColorIndicator.setBackgroundColor(color)
             pickedColorRgb.text = "RBG($r, $g, $b)"
             pickedColorHsv.text = "HSV(${round(hsv[0])}, ${round(hsv[1])}, ${round(hsv[2])})"
         }
-    }
-
-    private fun setFieldValues(habit: Habit) {
-        with(binding) {
-            nameEdittext.setText(habit.name)
-            descriptionEdittext.setText(habit.description)
-            prioritySpinner.setSelection(HabitPriority.entries.indexOf(habit.priority))
-
-            val radioButton = typeRadiogroup.getChildAt(HabitType.entries.indexOf(habit.type)) as RadioButton
-            radioButton.isChecked = true
-
-            if (habit.timesToComplete != 0)
-                timesToCompleteEdittext.setText(habit.timesToComplete.toString())
-            if (habit.frequencyInDays != 0)
-                frequencyEdittext.setText(habit.frequencyInDays.toString())
-        }
-    }
-
-    private fun checkValidity(): Boolean {
-        with(binding) {
-            if (nameEdittext.text.toString().isBlank()) return false
-            if (descriptionEdittext.text.toString().isBlank()) return false
-            if (!timesToCompleteEdittext.text.toString().isInt()) return false
-            if (!frequencyEdittext.text.toString().isInt()) return false
-        }
-        return true
-    }
-
-    private fun saveClicked() {
-        if (!checkValidity()) { //TODO
-            Toast.makeText(activity, "Form not valid", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val newHabit = binding.run {
-            val spinnerSelectedItemIndex = prioritySpinner.selectedItemPosition
-            val radioGroupSelectedItemIndex = typeRadiogroup.run {
-                indexOfChild(findViewById(checkedRadioButtonId))
-            }
-
-            Habit(
-                name = nameEdittext.text.toString().trim(),
-                description = descriptionEdittext.text.toString().trim(),
-                priority = HabitPriority.entries[spinnerSelectedItemIndex],
-                type = HabitType.entries[radioGroupSelectedItemIndex],
-                timesToComplete = timesToCompleteEdittext.text.toString().toInt(),
-                frequencyInDays = frequencyEdittext.text.toString().toInt(),
-                color = pickedColor,
-            )
-        }
-
-        val passedHabit = args.habit
-
-        if (passedHabit == null) {
-            habitsRepository.addHabit(newHabit)
-        } else {
-            habitsRepository.updateHabit(newHabit.copy(id = passedHabit.id))
-        }
-
-        findNavController().popBackStack()
     }
 
     override fun onDestroyView() {

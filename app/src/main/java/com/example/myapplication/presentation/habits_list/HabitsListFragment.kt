@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.databinding.HabitsListFragmentBinding
-import com.example.myapplication.models.Habit
-import com.example.myapplication.models.HabitType
+import com.example.myapplication.domain.models.Habit
+import com.example.myapplication.domain.models.HabitType
+import com.example.myapplication.presentation.habits_list_viewmodel.HabitsListViewModel
 import com.example.myapplication.presentation.home.HomeFragmentDirections
-import com.example.myapplication.presentation.home.habitsRepository
 import com.example.myapplication.utils.serializable
 
 
@@ -19,11 +20,9 @@ class HabitsListFragment : Fragment() {
     companion object {
         const val ARGS_HABIT_TYPE = "ARGS_HABIT_TYPE"
 
-        fun newInstance(habitType: HabitType): HabitsListFragment {
-            return HabitsListFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(ARGS_HABIT_TYPE, habitType)
-                }
+        fun newInstance(habitType: HabitType) = HabitsListFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable(ARGS_HABIT_TYPE, habitType)
             }
         }
     }
@@ -34,9 +33,7 @@ class HabitsListFragment : Fragment() {
     private var _binding: HabitsListFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: HabitsListAdapter
-
-    private val habits get() = habitsRepository.habits.filter { it.type == habitType }
+    private lateinit var viewModel: HabitsListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,13 +50,17 @@ class HabitsListFragment : Fragment() {
             habitType = serializable<HabitType>(ARGS_HABIT_TYPE)!!
         }
 
-        adapter = HabitsListAdapter(::onHabitClicked).apply {
-            setHabits(habits)
-        }
+        viewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
+
+        val adapter = HabitsListAdapter(::onHabitClicked)
         binding.habitsRecyclerView.adapter = adapter
 
-        habitsRepository.addOnChangedCallback {
-            adapter.setHabits(habits)
+        with(viewModel) {
+            habits.observe(viewLifecycleOwner) { habits ->
+                adapter.setHabits(habits.filter { it.type == habitType })
+            }
+
+            loadHabits()
         }
     }
 

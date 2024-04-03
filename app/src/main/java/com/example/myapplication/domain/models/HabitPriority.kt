@@ -1,4 +1,4 @@
-package com.example.myapplication.models
+package com.example.myapplication.domain.models
 
 import com.example.myapplication.R
 
