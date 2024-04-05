@@ -14,6 +14,18 @@ class HabitsListAdapter(
     private val onClick: onClick,
 ) : RecyclerView.Adapter<HabitsListViewHolder>() {
 
+    private val diffCallback = object : DiffUtil.ItemCallback<Habit>() {
+        override fun areItemsTheSame(oldItem: Habit, newItem: Habit): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Habit, newItem: Habit): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val asyncListDiffer = AsyncListDiffer(this, diffCallback)
+
     fun setHabits(habits: List<Habit>) {
         asyncListDiffer.submitList(habits)
     }
@@ -33,16 +45,4 @@ class HabitsListAdapter(
     override fun getItemCount(): Int {
         return asyncListDiffer.currentList.size
     }
-
-    private val diffCallback = object : DiffUtil.ItemCallback<Habit>() {
-        override fun areItemsTheSame(oldItem: Habit, newItem: Habit): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Habit, newItem: Habit): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    private val asyncListDiffer = AsyncListDiffer(this, diffCallback)
 }

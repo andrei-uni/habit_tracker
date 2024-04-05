@@ -74,6 +74,18 @@ class HabitAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setViewModelObservers()
+
+        setTextListeners()
+        setSpinnerListener()
+        setRadioGroupListener()
+
+        binding.saveButton.setOnClickListener { viewModel.savePressed() }
+
+        createColorPicker()
+    }
+
+    private fun setViewModelObservers() {
         with(viewModel) {
             name.observe(viewLifecycleOwner) {
                 binding.nameEdittext.setText(it)
@@ -122,13 +134,10 @@ class HabitAddFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
+    }
 
+    private fun setTextListeners() {
         with(binding) {
-            timesToCompleteEdittext.transformationMethod = null
-            frequencyEdittext.transformationMethod = null
-
-            saveButton.setOnClickListener { viewModel.savePressed() }
-
             nameEdittext.doOnTextChanged { text, _, _, _ ->
                 viewModel.nameChanged(text.toString())
             }
@@ -137,36 +146,40 @@ class HabitAddFragment : Fragment() {
                 viewModel.descriptionChanged(text.toString())
             }
 
-            prioritySpinner.onItemSelectedListener = object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    viewModel.priorityChanged(HabitPriority.entries[position])
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-
-            typeRadiogroup.setOnCheckedChangeListener { group, checkedId ->
-                val selectedItemIndex = group.run {
-                    indexOfChild(findViewById(checkedId))
-                }
-                viewModel.typeChanged(HabitType.entries[selectedItemIndex])
-            }
-
             timesToCompleteEdittext.doOnTextChanged { text, _, _, _ ->
                 viewModel.timesToCompleteChanged(text.toString())
             }
+            timesToCompleteEdittext.transformationMethod = null
 
             frequencyEdittext.doOnTextChanged { text, _, _, _ ->
                 viewModel.frequencyChanged(text.toString())
             }
+            frequencyEdittext.transformationMethod = null
         }
+    }
 
-        createColorPicker()
+    private fun setSpinnerListener() {
+        binding.prioritySpinner.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.priorityChanged(HabitPriority.entries[position])
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+    private fun setRadioGroupListener() {
+        binding.typeRadiogroup.setOnCheckedChangeListener { group, checkedId ->
+            val selectedItemIndex = group.run {
+                indexOfChild(findViewById(checkedId))
+            }
+            viewModel.typeChanged(HabitType.entries[selectedItemIndex])
+        }
     }
 
     private fun createColorPicker() {

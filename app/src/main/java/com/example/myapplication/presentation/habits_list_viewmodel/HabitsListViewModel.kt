@@ -42,6 +42,7 @@ class HabitsListViewModel : ViewModel() {
 
     fun setSort(habitSort: HabitSort) {
         this.habitSort = habitSort
+        loadHabits()
     }
 
     fun removeSort() {
@@ -50,6 +51,7 @@ class HabitsListViewModel : ViewModel() {
 
     fun setHabitNameFilter(habitNameFilter: HabitNameFilter) {
         this.habitNameFilter = habitNameFilter
+        loadHabits()
     }
 
     fun removeHabitNameFilter() {

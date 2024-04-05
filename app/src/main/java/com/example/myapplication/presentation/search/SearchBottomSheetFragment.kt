@@ -38,30 +38,6 @@ class SearchBottomSheetFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = SearchBottomSheetFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        habitsListViewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
-
-        with(binding) {
-            searchEdittext.addTextChangedListener(searchEditTextListener)
-
-            creationDateSortRadiogroup.apply {
-                check(getChildAt(0).id)
-                setOnCheckedChangeListener(creationDateRadioGroupListener)
-            }
-        }
-    }
-
     private val searchEditTextListener = object : TextWatcher {
         private var lastTextTrimmed = ""
 
@@ -90,14 +66,36 @@ class SearchBottomSheetFragment : Fragment() {
             onSortByCreationDateChanged(habitSort)
         }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = SearchBottomSheetFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        habitsListViewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
+
+        with(binding) {
+            searchEdittext.addTextChangedListener(searchEditTextListener)
+
+            creationDateSortRadiogroup.apply {
+                check(getChildAt(0).id)
+                setOnCheckedChangeListener(creationDateRadioGroupListener)
+            }
+        }
+    }
+
     private fun onSearchQueryChanged(query: String) {
         habitsListViewModel.setHabitNameFilter(HabitNameFilter(query))
-        habitsListViewModel.loadHabits()
     }
 
     private fun onSortByCreationDateChanged(habitSort: HabitSort) {
         habitsListViewModel.setSort(habitSort)
-        habitsListViewModel.loadHabits()
     }
 
     override fun onDestroyView() {
