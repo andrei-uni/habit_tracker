@@ -12,70 +12,50 @@ import java.util.Date
 
 class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
 
-    private val habit = passedHabit ?: Habit.empty
-
-    private val mutableName: MutableLiveData<String> = MutableLiveData()
-    private val mutableDescription: MutableLiveData<String> = MutableLiveData()
-    private val mutablePriority: MutableLiveData<HabitPriority> = MutableLiveData()
-    private val mutableType: MutableLiveData<HabitType> = MutableLiveData()
-    private val mutableTimesToComplete: MutableLiveData<String> = MutableLiveData()
-    private val mutableFrequency: MutableLiveData<String> = MutableLiveData()
-    private val mutableColor: MutableLiveData<Int> = MutableLiveData()
+    private val mutableHabit: MutableLiveData<Habit> = MutableLiveData()
     private val mutableIsFormValid: MutableLiveData<Boolean> = MutableLiveData()
     private val mutableIsFinished: MutableLiveData<Boolean> = MutableLiveData()
 
-    val name: LiveData<String> = mutableName.distinctUntilChanged()
-    val description: LiveData<String> = mutableDescription.distinctUntilChanged()
-    val priority: LiveData<HabitPriority> = mutablePriority.distinctUntilChanged()
-    val type: LiveData<HabitType> = mutableType.distinctUntilChanged()
-    val timesToComplete: LiveData<String> = mutableTimesToComplete.distinctUntilChanged()
-    val frequency: LiveData<String> = mutableFrequency.distinctUntilChanged()
-    val color: LiveData<Int> = mutableColor
+    val habit: LiveData<Habit> = mutableHabit.distinctUntilChanged()
     val isFormValid: LiveData<Boolean> = mutableIsFormValid
     val isFinished: LiveData<Boolean> = mutableIsFinished
 
     fun setHabit() {
-        mutableName.value = habit.name
-        mutableDescription.value = habit.description
-        mutablePriority.value = habit.priority
-        mutableType.value = habit.type
-        mutableTimesToComplete.value = habit.timesToComplete.toString()
-        mutableFrequency.value = habit.frequencyInDays.toString()
-        mutableColor.value = habit.color
+        mutableHabit.value = passedHabit ?: Habit.empty
     }
 
     fun nameChanged(name: String) {
-        mutableName.value = name
+        mutableHabit.value = mutableHabit.value!!.copy(name = name)
         checkValidity()
     }
 
     fun descriptionChanged(description: String) {
-        mutableDescription.value = description
+        mutableHabit.value = mutableHabit.value!!.copy(description = description)
         checkValidity()
     }
 
     fun priorityChanged(priority: HabitPriority) {
-        mutablePriority.value = priority
+        mutableHabit.value = mutableHabit.value!!.copy(priority = priority)
         checkValidity()
     }
 
     fun typeChanged(type: HabitType) {
-        mutableType.value = type
+        mutableHabit.value = mutableHabit.value!!.copy(type = type)
         checkValidity()
     }
 
-    fun timesToCompleteChanged(timesToComplete: String) {
-        mutableTimesToComplete.value = timesToComplete
+    fun timesToCompleteChanged(timesToComplete: Int) {
+        mutableHabit.value = mutableHabit.value!!.copy(timesToComplete = timesToComplete)
         checkValidity()
     }
 
-    fun frequencyChanged(frequency: String) {
-        mutableFrequency.value = frequency
+    fun frequencyChanged(frequency: Int) {
+        mutableHabit.value = mutableHabit.value!!.copy(frequencyInDays = frequency)
         checkValidity()
     }
 
     fun colorChanged(color: Int) {
-        mutableColor.value = color
+        mutableHabit.value = mutableHabit.value!!.copy(color = color)
         checkValidity()
     }
 
@@ -85,36 +65,35 @@ class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
 
     private val isValid: Boolean
         get() {
-            if (name.value.isNullOrBlank())
+            val habit = habit.value ?: return false
+            if (habit.name.isBlank())
                 return false
-            if (description.value.isNullOrBlank())
+            if (habit.description.isBlank())
                 return false
-            if (timesToComplete.value.isNullOrBlank() || timesToComplete.value!!.toInt() == 0)
+            if (habit.timesToComplete == 0)
                 return false
-            if (frequency.value.isNullOrBlank() || frequency.value!!.toInt() == 0)
+            if (habit.frequencyInDays == 0)
                 return false
-            if (color.value == 0)
+            if (habit.color == 0)
                 return false
             return true
         }
 
     fun savePressed() {
-        val newHabit = Habit(
-            name = name.value!!.trim(),
-            description = description.value!!.trim(),
-            priority = priority.value!!,
-            type = type.value!!,
-            timesToComplete = timesToComplete.value!!.toInt(),
-            frequencyInDays = frequency.value!!.toInt(),
-            color = color.value!!,
-            creationDate = Date(),
-        )
+        val habit = habit.value?.run {
+            copy(
+                name = name.trim(),
+                description = description.trim()
+            )
+        } ?: throw Exception("habit.value null")
 
         if (passedHabit == null) {
-            habitsRepository.addHabit(newHabit)
+            habitsRepository.addHabit(
+                habit.copy(creationDate = Date())
+            )
         } else {
             habitsRepository.updateHabit(
-                newHabit.copy(
+                habit.copy(
                     id = passedHabit.id,
                     creationDate = passedHabit.creationDate,
                 )

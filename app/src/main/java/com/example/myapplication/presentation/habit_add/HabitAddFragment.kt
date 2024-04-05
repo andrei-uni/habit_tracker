@@ -86,53 +86,50 @@ class HabitAddFragment : Fragment() {
     }
 
     private fun setViewModelObservers() {
-        with(viewModel) {
-            name.observe(viewLifecycleOwner) {
-                binding.nameEdittext.setText(it)
-                binding.nameEdittext.setSelection(it.length)
-            }
-
-            description.observe(viewLifecycleOwner) {
-                binding.descriptionEdittext.setText(it)
-                binding.descriptionEdittext.setSelection(it.length)
-            }
-
-            priority.observe(viewLifecycleOwner) {
-                binding.prioritySpinner.setSelection(HabitPriority.entries.indexOf(it))
-            }
-
-            type.observe(viewLifecycleOwner) {
-                val radioButton = binding.typeRadiogroup.getChildAt(HabitType.entries.indexOf(it)) as RadioButton
-                radioButton.isChecked = true
-            }
-
-            timesToComplete.observe(viewLifecycleOwner) {
-                if (!it.isInt()) return@observe
-                if (it.toInt() != 0) {
-                    binding.timesToCompleteEdittext.setText(it.toString())
-                    binding.timesToCompleteEdittext.setSelection(it.toString().length)
+        viewModel.habit.observe(viewLifecycleOwner) { habit ->
+            with(binding) {
+                nameEdittext.apply {
+                    setText(habit.name)
+                    setSelection(habit.name.length)
                 }
-            }
 
-            frequency.observe(viewLifecycleOwner) {
-                if (!it.isInt()) return@observe
-                if (it.toInt() != 0) {
-                    binding.frequencyEdittext.setText(it.toString())
-                    binding.frequencyEdittext.setSelection(it.toString().length)
+                descriptionEdittext.apply {
+                    setText(habit.description)
+                    setSelection(habit.description.length)
                 }
-            }
 
-            color.observe(viewLifecycleOwner) {
-                setPickedColor(it)
-            }
+                prioritySpinner.setSelection(HabitPriority.entries.indexOf(habit.priority))
 
-            isFormValid.observe(viewLifecycleOwner) {
-                binding.saveButton.isEnabled = it
-            }
+                typeRadiogroup.apply {
+                    val radioButton = getChildAt(HabitType.entries.indexOf(habit.type)) as RadioButton
+                    radioButton.isChecked = true
+                }
 
-            isFinished.observe(viewLifecycleOwner) {
+                timesToCompleteEdittext.apply {
+                    if (habit.timesToComplete != 0) {
+                        setText(habit.timesToComplete.toString())
+                        setSelection(habit.timesToComplete.toString().length)
+                    }
+                }
+
+                frequencyEdittext.apply {
+                    if (habit.frequencyInDays != 0) {
+                        setText(habit.frequencyInDays.toString())
+                        setSelection(habit.frequencyInDays.toString().length)
+                    }
+                }
+
+                setPickedColor(habit.color)
+            }
+        }
+
+        viewModel.isFormValid.observe(viewLifecycleOwner) {
+            binding.saveButton.isEnabled = it
+        }
+
+        viewModel.isFinished.observe(viewLifecycleOwner) {
+            if (it)
                 findNavController().popBackStack()
-            }
         }
     }
 
@@ -147,12 +144,18 @@ class HabitAddFragment : Fragment() {
             }
 
             timesToCompleteEdittext.doOnTextChanged { text, _, _, _ ->
-                viewModel.timesToCompleteChanged(text.toString())
+                val txt = text.toString()
+                if (txt.isInt()) {
+                    viewModel.timesToCompleteChanged(txt.toInt())
+                }
             }
             timesToCompleteEdittext.transformationMethod = null
 
             frequencyEdittext.doOnTextChanged { text, _, _, _ ->
-                viewModel.frequencyChanged(text.toString())
+                val txt = text.toString()
+                if (txt.isInt()) {
+                    viewModel.frequencyChanged(txt.toInt())
+                }
             }
             frequencyEdittext.transformationMethod = null
         }

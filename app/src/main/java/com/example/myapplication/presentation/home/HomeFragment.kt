@@ -30,6 +30,36 @@ class HomeFragment : Fragment() {
     private lateinit var searchBottomSheetFragment: SearchBottomSheetFragment
     private lateinit var searchBottomSheetBehavior: BottomSheetBehavior<*>
 
+    private val toolbarMenuProvider = object : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.home_toolbar_menu, menu)
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            when (menuItem.itemId) {
+                R.id.action_search -> onSearchClicked()
+                else -> return false
+            }
+            return true
+        }
+    }
+
+    private val searchBottomSheetCallback = object : BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            when (newState) {
+                BottomSheetBehavior.STATE_COLLAPSED -> {
+                    searchBottomSheetFragment.callbacks.onShown()
+                }
+                BottomSheetBehavior.STATE_HIDDEN -> {
+                    searchBottomSheetFragment.callbacks.onHidden()
+                }
+                else -> {}
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -75,36 +105,6 @@ class HomeFragment : Fragment() {
     private fun onFabClicked() {
         val directions = HomeFragmentDirections.navigateToHabitAdd(null)
         findNavController().navigate(directions)
-    }
-
-    private val toolbarMenuProvider = object : MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.home_toolbar_menu, menu)
-        }
-
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            when (menuItem.itemId) {
-                R.id.action_search -> onSearchClicked()
-                else -> return false
-            }
-            return true
-        }
-    }
-
-    private val searchBottomSheetCallback = object : BottomSheetCallback() {
-        override fun onStateChanged(bottomSheet: View, newState: Int) {
-            when (newState) {
-                BottomSheetBehavior.STATE_COLLAPSED -> {
-                    searchBottomSheetFragment.callbacks.onShown()
-                }
-                BottomSheetBehavior.STATE_HIDDEN -> {
-                    searchBottomSheetFragment.callbacks.onHidden()
-                }
-                else -> {}
-            }
-        }
-
-        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
     }
 
     override fun onDestroyView() {
