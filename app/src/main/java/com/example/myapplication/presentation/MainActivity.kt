@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.MainActivityBinding
+import com.example.myapplication.utils.Dependencies
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,9 +24,13 @@ class MainActivity : AppCompatActivity() {
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        setupNavigation()
 
-        navController = findNavController(R.id.nav_host_fragment)
+        Dependencies.init(applicationContext)
+    }
+
+    private fun setupNavigation() {
+        setSupportActionBar(binding.toolbar)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -35,6 +40,7 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout,
         )
 
+        navController = findNavController(R.id.nav_host_fragment)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navigationView.setupWithNavController(navController)
     }

@@ -89,13 +89,15 @@ class HabitAddFragment : Fragment() {
         viewModel.habit.observe(viewLifecycleOwner) { habit ->
             with(binding) {
                 nameEdittext.apply {
+                    if (text.toString() == habit.name)
+                        return@apply
                     setText(habit.name)
-                    setSelection(habit.name.length)
                 }
 
                 descriptionEdittext.apply {
+                    if (text.toString() == habit.description)
+                        return@apply
                     setText(habit.description)
-                    setSelection(habit.description.length)
                 }
 
                 prioritySpinner.setSelection(HabitPriority.entries.indexOf(habit.priority))
@@ -106,16 +108,18 @@ class HabitAddFragment : Fragment() {
                 }
 
                 timesToCompleteEdittext.apply {
+                    if (text.toString() == habit.timesToComplete.toString())
+                        return@apply
                     if (habit.timesToComplete != 0) {
                         setText(habit.timesToComplete.toString())
-                        setSelection(habit.timesToComplete.toString().length)
                     }
                 }
 
                 frequencyEdittext.apply {
+                    if (text.toString() == habit.frequencyInDays.toString())
+                        return@apply
                     if (habit.frequencyInDays != 0) {
                         setText(habit.frequencyInDays.toString())
-                        setSelection(habit.frequencyInDays.toString().length)
                     }
                 }
 

@@ -12,7 +12,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
-import com.example.myapplication.data.repositories.HabitsRepositoryImpl
+import com.example.myapplication.data.repositories.LocalHabitsRepository
 import com.example.myapplication.databinding.HomeFragmentBinding
 import com.example.myapplication.domain.repositories.HabitsRepository
 import com.example.myapplication.presentation.search.SearchBottomSheetFragment
@@ -20,7 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.tabs.TabLayoutMediator
 
-val habitsRepository: HabitsRepository = HabitsRepositoryImpl()
+val habitsRepository: HabitsRepository = LocalHabitsRepository()
 
 class HomeFragment : Fragment() {
 
@@ -29,36 +29,6 @@ class HomeFragment : Fragment() {
 
     private lateinit var searchBottomSheetFragment: SearchBottomSheetFragment
     private lateinit var searchBottomSheetBehavior: BottomSheetBehavior<*>
-
-    private val toolbarMenuProvider = object : MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.home_toolbar_menu, menu)
-        }
-
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            when (menuItem.itemId) {
-                R.id.action_search -> onSearchClicked()
-                else -> return false
-            }
-            return true
-        }
-    }
-
-    private val searchBottomSheetCallback = object : BottomSheetCallback() {
-        override fun onStateChanged(bottomSheet: View, newState: Int) {
-            when (newState) {
-                BottomSheetBehavior.STATE_COLLAPSED -> {
-                    searchBottomSheetFragment.callbacks.onShown()
-                }
-                BottomSheetBehavior.STATE_HIDDEN -> {
-                    searchBottomSheetFragment.callbacks.onHidden()
-                }
-                else -> {}
-            }
-        }
-
-        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,23 +42,14 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchBottomSheetFragment = SearchBottomSheetFragment()
-        childFragmentManager.beginTransaction()
-            .replace(binding.bottomSheetContainer.id, searchBottomSheetFragment)
-            .commit()
-
-        searchBottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetContainer).apply {
-            state = BottomSheetBehavior.STATE_HIDDEN
-            addBottomSheetCallback(searchBottomSheetCallback)
-        }
-
-        val menuHost = requireActivity() as MenuHost
-        menuHost.addMenuProvider(toolbarMenuProvider, viewLifecycleOwner)
+        setupSearchBottomSheet()
+        setupToolbarMenu()
 
         with(binding) {
             viewPager2.adapter = ViewPagerAdapter(requireActivity())
 
-            val viewPagerTabsTitles = resources.getStringArray(R.array.home_screen_view_pager_titles)
+            val viewPagerTabsTitles =
+                resources.getStringArray(R.array.home_screen_view_pager_titles)
 
             TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
                 tab.text = viewPagerTabsTitles[position]
@@ -96,6 +57,52 @@ class HomeFragment : Fragment() {
 
             addHabitFab.setOnClickListener { onFabClicked() }
         }
+    }
+
+    private fun setupSearchBottomSheet() {
+        searchBottomSheetFragment = SearchBottomSheetFragment()
+
+        childFragmentManager.beginTransaction()
+            .replace(binding.bottomSheetContainer.id, searchBottomSheetFragment)
+            .commit()
+
+        searchBottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetContainer).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            addBottomSheetCallback(object : BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                            searchBottomSheetFragment.callbacks.onShown()
+                        }
+
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            searchBottomSheetFragment.callbacks.onHidden()
+                        }
+
+                        else -> {}
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+        }
+    }
+
+    private fun setupToolbarMenu() {
+        val menuHost = requireActivity() as MenuHost
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.home_toolbar_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.action_search -> onSearchClicked()
+                    else -> return false
+                }
+                return true
+            }
+        }, viewLifecycleOwner)
     }
 
     private fun onSearchClicked() {

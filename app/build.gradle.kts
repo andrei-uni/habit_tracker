@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("androidx.navigation.safeargs")
+    id("com.google.devtools.ksp")
+    id("androidx.room")
+
 }
 
 android {
@@ -11,6 +14,10 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     defaultConfig {
@@ -42,6 +49,11 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

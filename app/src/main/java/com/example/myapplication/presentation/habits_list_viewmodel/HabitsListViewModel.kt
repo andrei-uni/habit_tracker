@@ -1,7 +1,9 @@
 package com.example.myapplication.presentation.habits_list_viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitNameFilter
@@ -17,44 +19,77 @@ class HabitsListViewModel : ViewModel() {
         private val DEFAULT_HABIT_NAME_FILTER = HabitNameFilter("")
     }
 
-    init {
-        habitsRepository.addOnChangedCallback {
-            loadHabits()
+    private val habitSort = MutableLiveData<HabitSort>(DEFAULT_HABIT_SORT)
+    private val habitNameFilter = MutableLiveData<HabitNameFilter>(DEFAULT_HABIT_NAME_FILTER)
+
+    private val habitsFromRepo = MutableLiveData<List<Habit>>()
+
+    private val habitsFromRepoObserver = object : Observer<List<Habit>> {
+        private val getHabits get() = habitsRepository.getHabits()
+
+        fun observe() {
+            getHabits.observeForever(this)
+        }
+
+        fun remove() {
+            getHabits.removeObserver(this)
+        }
+
+        override fun onChanged(value: List<Habit>) {
+            habitsFromRepo.postValue(value)
         }
     }
 
-    private val mutableHabits: MutableLiveData<List<Habit>> = MutableLiveData()
+    val habits: LiveData<List<Habit>> = MediatorLiveData<List<Habit>>().apply {
+        fun update() {
+            val habits = habitsFromRepo.value ?: return
+            val habitSort = habitSort.value ?: return
+            val habitNameFilter = habitNameFilter.value ?: return
 
-    val habits: LiveData<List<Habit>> = mutableHabits
+            val filtered = if (habitNameFilter.startsWith.isBlank())
+                habits
+            else
+                habits.filter {
+                    it.name.startsWith(habitNameFilter.startsWith, true)
+                }
 
-    private var habitSort = DEFAULT_HABIT_SORT
+            val sorted = when (habitSort) {
+                HabitSort.CREATION_DATE_NEWEST -> filtered.sortedByDescending { it.creationDate }
+                HabitSort.CREATION_DATE_OLDEST -> filtered.sortedBy { it.creationDate }
+            }
 
-    private var habitNameFilter = DEFAULT_HABIT_NAME_FILTER
+            postValue(sorted)
+        }
+
+        addSource(habitsFromRepo) { update() }
+        addSource(habitSort) { update() }
+        addSource(habitNameFilter) { update() }
+
+        update()
+    }
 
     fun loadHabits() {
-        val nameFilter: HabitNameFilter? =
-            if (habitNameFilter.startsWith.isBlank()) null else habitNameFilter
-
-        val habits = habitsRepository.getHabits(habitSort, nameFilter)
-
-        mutableHabits.postValue(habits)
+        habitsFromRepoObserver.observe()
     }
 
     fun setSort(habitSort: HabitSort) {
-        this.habitSort = habitSort
-        loadHabits()
+        this.habitSort.value = habitSort
     }
 
     fun removeSort() {
-        habitSort = DEFAULT_HABIT_SORT
+        habitSort.value = DEFAULT_HABIT_SORT
     }
 
     fun setHabitNameFilter(habitNameFilter: HabitNameFilter) {
-        this.habitNameFilter = habitNameFilter
-        loadHabits()
+        this.habitNameFilter.value = habitNameFilter
     }
 
     fun removeHabitNameFilter() {
-        habitNameFilter = DEFAULT_HABIT_NAME_FILTER
+        habitNameFilter.value = DEFAULT_HABIT_NAME_FILTER
+    }
+
+    override fun onCleared() {
+        habitsFromRepoObserver.remove()
+        super.onCleared()
     }
 }

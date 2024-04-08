@@ -85,7 +85,7 @@ class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
                 name = name.trim(),
                 description = description.trim()
             )
-        } ?: throw Exception("habit.value null")
+        } ?: return
 
         if (passedHabit == null) {
             habitsRepository.addHabit(
