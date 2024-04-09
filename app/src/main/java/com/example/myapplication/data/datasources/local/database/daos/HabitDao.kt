@@ -14,8 +14,8 @@ interface HabitDao {
     fun getAll(): LiveData<List<HabitEntity>>
 
     @Insert
-    fun add(habitEntity: HabitEntity)
+    suspend fun add(habitEntity: HabitEntity)
 
     @Update
-    fun update(habitEntity: HabitEntity)
+    suspend fun update(habitEntity: HabitEntity)
 }

@@ -4,10 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitPriority
 import com.example.myapplication.domain.models.HabitType
 import com.example.myapplication.presentation.home.habitsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 
 class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
@@ -87,19 +91,23 @@ class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
             )
         } ?: return
 
-        if (passedHabit == null) {
-            habitsRepository.addHabit(
-                habit.copy(creationDate = Date())
-            )
-        } else {
-            habitsRepository.updateHabit(
-                habit.copy(
-                    id = passedHabit.id,
-                    creationDate = passedHabit.creationDate,
+        viewModelScope.launch(Dispatchers.IO) {
+            if (passedHabit == null) {
+                habitsRepository.addHabit(
+                    habit.copy(creationDate = Date())
                 )
-            )
-        }
+            } else {
+                habitsRepository.updateHabit(
+                    habit.copy(
+                        id = passedHabit.id,
+                        creationDate = passedHabit.creationDate,
+                    )
+                )
+            }
 
-        mutableIsFinished.value = true
+            withContext(Dispatchers.Main) {
+                mutableIsFinished.value = true
+            }
+        }
     }
 }

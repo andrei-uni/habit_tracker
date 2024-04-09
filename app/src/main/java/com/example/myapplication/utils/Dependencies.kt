@@ -10,7 +10,6 @@ object Dependencies {
 
     val appDatabase: AppDatabase by lazy {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, "database.db")
-            .allowMainThreadQueries()
             .build()
     }
 
