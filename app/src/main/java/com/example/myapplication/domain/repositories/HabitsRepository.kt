@@ -7,7 +7,7 @@ abstract class HabitsRepository {
 
     abstract fun getHabits(): LiveData<List<Habit>>
 
-    abstract fun addHabit(habit: Habit)
+    abstract suspend fun addHabit(habit: Habit)
 
-    abstract fun updateHabit(habit: Habit)
+    abstract suspend fun updateHabit(habit: Habit)
 }

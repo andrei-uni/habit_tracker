@@ -21,11 +21,11 @@ class LocalHabitsRepository : HabitsRepository() {
         return habitDao.getAll().toModels()
     }
 
-    override fun addHabit(habit: Habit) {
+    override suspend fun addHabit(habit: Habit) {
         habitDao.add(habit.toDB())
     }
 
-    override fun updateHabit(habit: Habit) {
+    override suspend fun updateHabit(habit: Habit) {
         habitDao.update(habit.toDB())
     }
 }
