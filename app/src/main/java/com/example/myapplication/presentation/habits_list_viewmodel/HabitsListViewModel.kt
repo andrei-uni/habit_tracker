@@ -25,7 +25,10 @@ class HabitsListViewModel : ViewModel() {
     private val habitsFromRepo = MutableLiveData<List<Habit>>()
 
     private val habitsFromRepoObserver = object : Observer<List<Habit>> {
-        private val getHabits get() = habitsRepository.getHabits()
+
+        private val getHabits: LiveData<List<Habit>> by lazy {
+            habitsRepository.getHabits()
+        }
 
         fun observe() {
             getHabits.observeForever(this)
@@ -40,32 +43,34 @@ class HabitsListViewModel : ViewModel() {
         }
     }
 
-    val habits: LiveData<List<Habit>> = MediatorLiveData<List<Habit>>().apply {
-        fun update() {
-            val habits = habitsFromRepo.value ?: return
-            val habitSort = habitSort.value ?: return
-            val habitNameFilter = habitNameFilter.value ?: return
+    private val habitsMediator = MediatorLiveData<List<Habit>>().apply {
+        addSource(habitsFromRepo) { updateHabits(this) }
+        addSource(habitSort) { updateHabits(this) }
+        addSource(habitNameFilter) { updateHabits(this) }
 
-            val filtered = if (habitNameFilter.startsWith.isBlank())
-                habits
-            else
-                habits.filter {
-                    it.name.startsWith(habitNameFilter.startsWith, true)
-                }
+        updateHabits(this)
+    }
 
-            val sorted = when (habitSort) {
-                HabitSort.CREATION_DATE_NEWEST -> filtered.sortedByDescending { it.creationDate }
-                HabitSort.CREATION_DATE_OLDEST -> filtered.sortedBy { it.creationDate }
+    val habits: LiveData<List<Habit>> = habitsMediator
+
+    private fun updateHabits(liveData: MutableLiveData<List<Habit>>) {
+        val habits = habitsFromRepo.value ?: return
+        val habitSort = habitSort.value ?: return
+        val habitNameFilter = habitNameFilter.value ?: return
+
+        val filtered = if (habitNameFilter.startsWith.isBlank())
+            habits
+        else
+            habits.filter {
+                it.name.startsWith(habitNameFilter.startsWith, true)
             }
 
-            postValue(sorted)
+        val sorted = when (habitSort) {
+            HabitSort.CREATION_DATE_NEWEST -> filtered.sortedByDescending { it.creationDate }
+            HabitSort.CREATION_DATE_OLDEST -> filtered.sortedBy { it.creationDate }
         }
 
-        addSource(habitsFromRepo) { update() }
-        addSource(habitSort) { update() }
-        addSource(habitNameFilter) { update() }
-
-        update()
+        liveData.postValue(sorted)
     }
 
     fun loadHabits() {
