@@ -5,7 +5,7 @@ import com.example.myapplication.domain.models.Habit
 
 abstract class HabitsRepository {
 
-    abstract fun getHabits(): LiveData<List<Habit>>
+    abstract suspend fun getHabits(): LiveData<List<Habit>>
 
     abstract suspend fun addHabit(habit: Habit)
 

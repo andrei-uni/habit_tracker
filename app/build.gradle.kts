@@ -4,6 +4,7 @@ plugins {
     id("androidx.navigation.safeargs")
     id("com.google.devtools.ksp")
     id("androidx.room")
+    kotlin("plugin.serialization") version "1.9.23"
 
 }
 
@@ -49,6 +50,14 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.glide)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.kotlinx.serialization)
+    implementation(libs.logging.interceptor)
 
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)

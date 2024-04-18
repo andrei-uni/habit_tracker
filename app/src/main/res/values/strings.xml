@@ -28,6 +28,7 @@
     <string name="habit_sort_creation_date">Sort by creation date</string>
     <string name="search">Search</string>
     <string name="priority">Priority</string>
+    <string name="user_avatar">User Avatar</string>
 
     <string-array name="habit_priorities">
         <item>@string/habit_priority_low</item>

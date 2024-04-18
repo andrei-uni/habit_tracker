@@ -23,5 +23,7 @@ data class HabitEntity(
     val timesToComplete: Int,
     val frequencyInDays: Int,
     val color: Int,
-    val creationDate: Date,
+    val lastEditDate: Date,
+    val syncedAdd: Int,
+    val syncedUpdate: Int,
 )

@@ -5,10 +5,15 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitNameFilter
 import com.example.myapplication.domain.models.HabitSort
-import com.example.myapplication.presentation.home.habitsRepository
+import com.example.myapplication.domain.repositories.HabitsRepository
+import com.example.myapplication.utils.Dependencies
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class HabitsListViewModel : ViewModel() {
@@ -19,6 +24,10 @@ class HabitsListViewModel : ViewModel() {
         private val DEFAULT_HABIT_NAME_FILTER = HabitNameFilter("")
     }
 
+    private val habitsRepository: HabitsRepository by lazy {
+        Dependencies.habitsRepository
+    }
+
     private val habitSort = MutableLiveData<HabitSort>(DEFAULT_HABIT_SORT)
     private val habitNameFilter = MutableLiveData<HabitNameFilter>(DEFAULT_HABIT_NAME_FILTER)
 
@@ -26,16 +35,24 @@ class HabitsListViewModel : ViewModel() {
 
     private val habitsFromRepoObserver = object : Observer<List<Habit>> {
 
-        private val getHabits: LiveData<List<Habit>> by lazy {
-            habitsRepository.getHabits()
+        private lateinit var getHabitsLiveData: LiveData<List<Habit>>
+
+        fun getHabits() {
+            viewModelScope.launch(Dispatchers.IO) {
+                getHabitsLiveData = habitsRepository.getHabits()
+
+                withContext(Dispatchers.Main) {
+                    observe()
+                }
+            }
         }
 
         fun observe() {
-            getHabits.observeForever(this)
+            getHabitsLiveData.observeForever(this)
         }
 
         fun remove() {
-            getHabits.removeObserver(this)
+            getHabitsLiveData.removeObserver(this)
         }
 
         override fun onChanged(value: List<Habit>) {
@@ -44,16 +61,16 @@ class HabitsListViewModel : ViewModel() {
     }
 
     private val habitsMediator = MediatorLiveData<List<Habit>>().apply {
-        addSource(habitsFromRepo) { updateHabits(this) }
-        addSource(habitSort) { updateHabits(this) }
-        addSource(habitNameFilter) { updateHabits(this) }
+        addSource(habitsFromRepo) { updateHabits() }
+        addSource(habitSort) { updateHabits() }
+        addSource(habitNameFilter) { updateHabits() }
 
-        updateHabits(this)
+        updateHabits()
     }
 
     val habits: LiveData<List<Habit>> = habitsMediator
 
-    private fun updateHabits(liveData: MutableLiveData<List<Habit>>) {
+    private fun updateHabits() {
         val habits = habitsFromRepo.value ?: return
         val habitSort = habitSort.value ?: return
         val habitNameFilter = habitNameFilter.value ?: return
@@ -66,15 +83,15 @@ class HabitsListViewModel : ViewModel() {
             }
 
         val sorted = when (habitSort) {
-            HabitSort.CREATION_DATE_NEWEST -> filtered.sortedByDescending { it.creationDate }
-            HabitSort.CREATION_DATE_OLDEST -> filtered.sortedBy { it.creationDate }
+            HabitSort.CREATION_DATE_NEWEST -> filtered.sortedByDescending { it.lastEditDate }
+            HabitSort.CREATION_DATE_OLDEST -> filtered.sortedBy { it.lastEditDate }
         }
 
-        liveData.postValue(sorted)
+        habitsMediator.value = sorted
     }
 
     fun loadHabits() {
-        habitsFromRepoObserver.observe()
+        habitsFromRepoObserver.getHabits()
     }
 
     fun setSort(habitSort: HabitSort) {

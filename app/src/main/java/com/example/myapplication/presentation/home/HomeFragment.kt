@@ -12,15 +12,11 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
-import com.example.myapplication.data.repositories.LocalHabitsRepository
 import com.example.myapplication.databinding.HomeFragmentBinding
-import com.example.myapplication.domain.repositories.HabitsRepository
 import com.example.myapplication.presentation.search.SearchBottomSheetFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.tabs.TabLayoutMediator
-
-val habitsRepository: HabitsRepository = LocalHabitsRepository()
 
 class HomeFragment : Fragment() {
 

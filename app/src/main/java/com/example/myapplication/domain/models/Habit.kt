@@ -13,7 +13,7 @@ data class Habit(
     val timesToComplete: Int,
     val frequencyInDays: Int,
     val color: Int,
-    val creationDate: Date,
+    val lastEditDate: Date,
 ) : Serializable {
     companion object {
         val empty
@@ -25,7 +25,7 @@ data class Habit(
                 timesToComplete = 0,
                 frequencyInDays = 0,
                 color = 0,
-                creationDate = Date(0)
+                lastEditDate = Date(0)
             )
     }
 }

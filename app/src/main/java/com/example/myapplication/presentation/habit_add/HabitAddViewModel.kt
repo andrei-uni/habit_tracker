@@ -8,13 +8,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitPriority
 import com.example.myapplication.domain.models.HabitType
-import com.example.myapplication.presentation.home.habitsRepository
+import com.example.myapplication.domain.repositories.HabitsRepository
+import com.example.myapplication.utils.Dependencies
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 
 class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
+
+    private val habitsRepository: HabitsRepository by lazy {
+        Dependencies.habitsRepository
+    }
 
     private val mutableHabit: MutableLiveData<Habit> = MutableLiveData()
     private val mutableIsFormValid: MutableLiveData<Boolean> = MutableLiveData()
@@ -87,20 +92,18 @@ class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
         val habit = habit.value?.run {
             copy(
                 name = name.trim(),
-                description = description.trim()
+                description = description.trim(),
+                lastEditDate = Date()
             )
         } ?: return
 
         viewModelScope.launch(Dispatchers.IO) {
             if (passedHabit == null) {
-                habitsRepository.addHabit(
-                    habit.copy(creationDate = Date())
-                )
+                habitsRepository.addHabit(habit)
             } else {
                 habitsRepository.updateHabit(
                     habit.copy(
                         id = passedHabit.id,
-                        creationDate = passedHabit.creationDate,
                     )
                 )
             }

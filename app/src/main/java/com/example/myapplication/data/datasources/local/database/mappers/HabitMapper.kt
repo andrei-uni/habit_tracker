@@ -13,11 +13,11 @@ fun HabitEntity.toModel(): Habit {
         timesToComplete = timesToComplete,
         frequencyInDays = frequencyInDays,
         color = color,
-        creationDate = creationDate,
+        lastEditDate = lastEditDate,
     )
 }
 
-fun Habit.toDB(): HabitEntity {
+fun Habit.toDB(syncedAdd: Int, syncedUpdate: Int): HabitEntity {
     return HabitEntity(
         id = id,
         name = name,
@@ -27,6 +27,16 @@ fun Habit.toDB(): HabitEntity {
         timesToComplete = timesToComplete,
         frequencyInDays = frequencyInDays,
         color = color,
-        creationDate = creationDate,
+        lastEditDate = lastEditDate,
+        syncedAdd = syncedAdd,
+        syncedUpdate = syncedUpdate,
     )
+}
+
+fun Habit.toDbSynced(): HabitEntity {
+    return toDB(syncedAdd = 1, syncedUpdate = 1)
+}
+
+fun Habit.toDbUnsynced(): HabitEntity {
+    return toDB(syncedAdd = 0, syncedUpdate = 0)
 }
