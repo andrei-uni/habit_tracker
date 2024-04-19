@@ -6,9 +6,7 @@ import com.example.myapplication.data.datasources.local.database.entities.HabitE
 import com.example.myapplication.domain.repositories.RemoteHabitsRepository
 import com.example.myapplication.utils.Dependencies
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
@@ -55,22 +53,20 @@ abstract class HabitsSyncer : CoroutineScope {
         syncHabits()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private suspend fun syncHabits() {
-        GlobalScope.launch {
-            val unsyncedHabits = unsyncedHabitsLiveData.value ?: run {
-                isSyncScheduled = false
-                return@launch
-            }
-
-            val syncSuccessful = trySyncHabits(unsyncedHabits)
-
-            if (syncSuccessful) {
-                isSyncScheduled = false
-            } else {
-                delay(syncRetryInterval)
-                syncHabits()
-            }
+        val unsyncedHabits = unsyncedHabitsLiveData.value ?: run {
+            isSyncScheduled = false
+            return
         }
+
+        val syncSuccessful = trySyncHabits(unsyncedHabits)
+
+        if (syncSuccessful) {
+            isSyncScheduled = false
+            return
+        }
+
+        delay(syncRetryInterval)
+        syncHabits()
     }
 }

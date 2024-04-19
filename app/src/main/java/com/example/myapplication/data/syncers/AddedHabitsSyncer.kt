@@ -24,7 +24,10 @@ object AddedHabitsSyncer : HabitsSyncer() {
                 syncedUpdate = 1,
             )
 
-            habitDao.deleteAndAddHabitTransaction(unsyncedHabit, newHabit)
+            habitDao.deleteAndAddHabitTransaction(
+                habitToDelete = unsyncedHabit,
+                habitToAdd = newHabit,
+            )
         }
 
         return true

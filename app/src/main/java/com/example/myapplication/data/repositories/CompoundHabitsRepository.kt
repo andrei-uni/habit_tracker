@@ -20,25 +20,26 @@ class CompoundHabitsRepository : HabitsRepository() {
         Dependencies.localHabitsRepository
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override suspend fun getHabits(): LiveData<List<Habit>> {
-        return try {
-            val remoteHabits = remoteHabitsRepository.getHabits()
-
-            remoteHabits.value?.let {
-                if (it.isNotEmpty())
-                    saveRemoteHabits(it)
-            }
-
-            remoteHabits
-        } catch (e: Exception) {
-            localHabitsRepository.getHabits()
+        GlobalScope.launch {
+            saveRemoteHabits()
         }
+
+        return localHabitsRepository.getHabits()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private suspend fun saveRemoteHabits(habits: List<Habit>) {
-        GlobalScope.launch {
-            localHabitsRepository.addHabits(habits, synced = true)
+    private suspend fun saveRemoteHabits() {
+        try {
+            val remoteHabits = remoteHabitsRepository.getHabits()
+
+            if (remoteHabits.value.isNullOrEmpty())
+                return
+
+            localHabitsRepository.addHabits(remoteHabits.value!!, synced = true)
+
+        } catch (e: Exception) {
+            return
         }
     }
 
@@ -47,6 +48,7 @@ class CompoundHabitsRepository : HabitsRepository() {
             val newHabitId = remoteHabitsRepository.addHabitWithId(habit)
 
             localHabitsRepository.addHabit(habit.copy(id = newHabitId), synced = true)
+
         } catch (e: Exception) {
             localHabitsRepository.addHabit(habit, synced = false)
         }
@@ -57,6 +59,7 @@ class CompoundHabitsRepository : HabitsRepository() {
             remoteHabitsRepository.updateHabit(habit)
 
             localHabitsRepository.updateHabit(habit, synced = true)
+
         } catch (e: Exception) {
             localHabitsRepository.updateHabit(habit, synced = false)
         }

@@ -18,14 +18,10 @@ class RemoteHabitsRepositoryImpl : RemoteHabitsRepository() {
         Dependencies.habitsService
     }
 
-    private val mutableHabits = MutableLiveData<List<Habit>>()
-
     override suspend fun getHabits(): LiveData<List<Habit>> {
         val habits: List<HabitApi> = habitsService.getHabits()
 
-        mutableHabits.postValue(habits.map { it.toModel() })
-
-        return mutableHabits
+        return MutableLiveData(habits.map { it.toModel() })
     }
 
     override suspend fun addHabitWithId(habit: Habit): NewHabitId {
@@ -33,24 +29,11 @@ class RemoteHabitsRepositoryImpl : RemoteHabitsRepository() {
 
         val addResult: HabitUidApi = habitsService.addHabit(apiHabit)
 
-        mutableHabits.apply {
-            val habits = value?.toMutableList() ?: mutableListOf()
-            habits.add(habit.copy(id = addResult.uid))
-            postValue(habits)
-        }
-
         return addResult.uid
     }
 
     override suspend fun updateHabit(habit: Habit) {
         habitsService.updateHabit(habit.toApi())
-
-        mutableHabits.apply {
-            val habits = value?.toMutableList() ?: mutableListOf()
-            val index = habits.indexOfFirst { it.id == habit.id }
-            habits[index] = habit
-            postValue(habits)
-        }
     }
 
 //    fun deleteAll() = runBlocking {
