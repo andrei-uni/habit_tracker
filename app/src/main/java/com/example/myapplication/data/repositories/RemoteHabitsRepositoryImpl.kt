@@ -1,7 +1,5 @@
 package com.example.myapplication.data.repositories
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.data.datasources.remote.habits_service.HabitsService
 import com.example.myapplication.data.datasources.remote.habits_service.api_objects.shared.HabitApi
 import com.example.myapplication.data.datasources.remote.habits_service.api_objects.shared.HabitUidApi
@@ -11,6 +9,8 @@ import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.repositories.NewHabitId
 import com.example.myapplication.domain.repositories.RemoteHabitsRepository
 import com.example.myapplication.utils.Dependencies
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class RemoteHabitsRepositoryImpl : RemoteHabitsRepository() {
 
@@ -18,10 +18,12 @@ class RemoteHabitsRepositoryImpl : RemoteHabitsRepository() {
         Dependencies.habitsService
     }
 
-    override suspend fun getHabits(): LiveData<List<Habit>> {
+    override suspend fun getHabits(): Flow<List<Habit>> {
         val habits: List<HabitApi> = habitsService.getHabits()
 
-        return MutableLiveData(habits.map { it.toModel() })
+        val habitModels = habits.map { it.toModel() }
+
+        return flowOf(habitModels)
     }
 
     override suspend fun addHabitWithId(habit: Habit): NewHabitId {

@@ -1,11 +1,11 @@
 package com.example.myapplication.domain.repositories
 
-import androidx.lifecycle.LiveData
 import com.example.myapplication.domain.models.Habit
+import kotlinx.coroutines.flow.Flow
 
 abstract class HabitsRepository {
 
-    abstract suspend fun getHabits(): LiveData<List<Habit>>
+    abstract suspend fun getHabits(): Flow<List<Habit>>
 
     abstract suspend fun addHabit(habit: Habit)
 

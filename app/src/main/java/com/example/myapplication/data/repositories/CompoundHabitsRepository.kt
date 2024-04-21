@@ -1,6 +1,5 @@
 package com.example.myapplication.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.repositories.HabitsRepository
 import com.example.myapplication.domain.repositories.LocalHabitsRepository
@@ -8,6 +7,8 @@ import com.example.myapplication.domain.repositories.RemoteHabitsRepository
 import com.example.myapplication.utils.Dependencies
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class CompoundHabitsRepository : HabitsRepository() {
@@ -21,7 +22,7 @@ class CompoundHabitsRepository : HabitsRepository() {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    override suspend fun getHabits(): LiveData<List<Habit>> {
+    override suspend fun getHabits(): Flow<List<Habit>> {
         GlobalScope.launch {
             saveRemoteHabits()
         }
@@ -31,12 +32,12 @@ class CompoundHabitsRepository : HabitsRepository() {
 
     private suspend fun saveRemoteHabits() {
         try {
-            val remoteHabits = remoteHabitsRepository.getHabits()
+            val remoteHabits = remoteHabitsRepository.getHabits().firstOrNull()
 
-            if (remoteHabits.value.isNullOrEmpty())
+            if (remoteHabits.isNullOrEmpty())
                 return
 
-            localHabitsRepository.addHabits(remoteHabits.value!!, synced = true)
+            localHabitsRepository.addHabits(remoteHabits, synced = true)
 
         } catch (e: Exception) {
             return

@@ -1,12 +1,12 @@
 package com.example.myapplication.data.syncers
 
-import androidx.lifecycle.LiveData
 import com.example.myapplication.data.datasources.local.database.entities.HabitEntity
 import com.example.myapplication.data.datasources.local.database.mappers.toModel
+import kotlinx.coroutines.flow.Flow
 
 object AddedHabitsSyncer : HabitsSyncer() {
 
-    override val unsyncedHabitsLiveData: LiveData<List<HabitEntity>> by lazy {
+    override val unsyncedHabitsFlow: Flow<List<HabitEntity>> by lazy {
         habitDao.observeUnsyncedAdd()
     }
 

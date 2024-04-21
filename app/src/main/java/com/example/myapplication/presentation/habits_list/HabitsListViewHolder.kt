@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitItemViewBinding
 import com.example.myapplication.domain.models.Habit
+import com.example.myapplication.domain.models.HabitPriority
+import com.example.myapplication.domain.models.HabitType
 
 class HabitsListViewHolder(
     private val binding: HabitItemViewBinding,
@@ -20,11 +22,20 @@ class HabitsListViewHolder(
             name.text = habit.name
             description.text = habit.description
             priority.text = run {
-                val priority = context.getString(habit.priority.resId)
+                val rString = when (habit.priority) {
+                    HabitPriority.LOW -> R.string.habit_priority_low
+                    HabitPriority.MEDIUM -> R.string.habit_priority_medium
+                    HabitPriority.HIGH -> R.string.habit_priority_high
+                }
+                val priority = context.getString(rString)
                 context.getString(R.string.habit_priority, priority)
             }
             type.text = run {
-                val type = context.getString(habit.type.resId)
+                val rString = when (habit.type) {
+                    HabitType.GOOD -> R.string.habit_type_good
+                    HabitType.BAD -> R.string.habit_type_bad
+                }
+                val type = context.getString(rString)
                 context.getString(R.string.habit_type, type)
             }
             frequency.text = context.getString(R.string.once_in_days, habit.frequencyInDays.toString())

@@ -1,6 +1,5 @@
 package com.example.myapplication.data.repositories
 
-import androidx.lifecycle.LiveData
 import com.example.myapplication.data.datasources.local.database.daos.HabitDao
 import com.example.myapplication.data.datasources.local.database.mappers.toDB
 import com.example.myapplication.data.datasources.local.database.mappers.toDbSynced
@@ -9,6 +8,7 @@ import com.example.myapplication.data.datasources.local.database.mappers.toModel
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.repositories.LocalHabitsRepository
 import com.example.myapplication.utils.Dependencies
+import kotlinx.coroutines.flow.Flow
 
 class LocalHabitsRepositoryImpl : LocalHabitsRepository() {
 
@@ -16,7 +16,7 @@ class LocalHabitsRepositoryImpl : LocalHabitsRepository() {
         Dependencies.appDatabase.habitDao()
     }
 
-    override suspend fun getHabits(): LiveData<List<Habit>> {
+    override suspend fun getHabits(): Flow<List<Habit>> {
         return habitDao.getAll().toModels()
     }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitNameFilter
@@ -39,7 +40,7 @@ class HabitsListViewModel : ViewModel() {
 
         fun getHabits() {
             viewModelScope.launch(Dispatchers.IO) {
-                getHabitsLiveData = habitsRepository.getHabits()
+                getHabitsLiveData = habitsRepository.getHabits().asLiveData()
 
                 withContext(Dispatchers.Main) {
                     observe()
