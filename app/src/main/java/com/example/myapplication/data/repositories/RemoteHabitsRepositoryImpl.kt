@@ -8,15 +8,12 @@ import com.example.myapplication.data.datasources.remote.habits_service.mappers.
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.repositories.NewHabitId
 import com.example.myapplication.domain.repositories.RemoteHabitsRepository
-import com.example.myapplication.utils.Dependencies
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class RemoteHabitsRepositoryImpl : RemoteHabitsRepository() {
-
-    private val habitsService: HabitsService by lazy {
-        Dependencies.habitsService
-    }
+class RemoteHabitsRepositoryImpl(
+    private val habitsService: HabitsService,
+) : RemoteHabitsRepository() {
 
     override suspend fun getHabits(): Flow<List<Habit>> {
         val habits: List<HabitApi> = habitsService.getHabits()

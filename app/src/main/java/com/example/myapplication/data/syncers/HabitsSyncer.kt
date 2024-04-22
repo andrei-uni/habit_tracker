@@ -1,9 +1,9 @@
 package com.example.myapplication.data.syncers
 
+import com.example.myapplication.data.datasources.local.database.AppDatabase
 import com.example.myapplication.data.datasources.local.database.daos.HabitDao
 import com.example.myapplication.data.datasources.local.database.entities.HabitEntity
 import com.example.myapplication.domain.repositories.RemoteHabitsRepository
-import com.example.myapplication.utils.Dependencies
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -26,12 +27,14 @@ abstract class HabitsSyncer : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 
-    protected val remoteHabitsRepository: RemoteHabitsRepository by lazy {
-        Dependencies.remoteHabitsRepository
-    }
+    @Inject
+    lateinit var remoteHabitsRepository: RemoteHabitsRepository
+
+    @Inject
+    lateinit var appDatabase: AppDatabase
 
     protected val habitDao: HabitDao by lazy {
-        Dependencies.appDatabase.habitDao()
+        appDatabase.habitDao()
     }
 
     private lateinit var unsyncedHabitsStateFlow: StateFlow<List<HabitEntity>>

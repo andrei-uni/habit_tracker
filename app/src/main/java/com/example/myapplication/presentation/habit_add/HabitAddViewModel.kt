@@ -8,18 +8,24 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitPriority
 import com.example.myapplication.domain.models.HabitType
-import com.example.myapplication.domain.repositories.HabitsRepository
-import com.example.myapplication.utils.Dependencies
+import com.example.myapplication.domain.usecases.AddHabitUseCase
+import com.example.myapplication.domain.usecases.UpdateHabitUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 
-class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
-
-    private val habitsRepository: HabitsRepository by lazy {
-        Dependencies.habitsRepository
-    }
+@HiltViewModel(
+    assistedFactory = HabitAddViewModelFactory::class
+)
+class HabitAddViewModel @AssistedInject constructor(
+    private val addHabitUseCase: AddHabitUseCase,
+    private val updateHabitUseCase: UpdateHabitUseCase,
+    @Assisted private val passedHabit: Habit?,
+) : ViewModel() {
 
     private val mutableHabit: MutableLiveData<Habit> = MutableLiveData()
     private val mutableIsFormValid: MutableLiveData<Boolean> = MutableLiveData()
@@ -99,9 +105,9 @@ class HabitAddViewModel(private val passedHabit: Habit?) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             if (passedHabit == null) {
-                habitsRepository.addHabit(habit)
+                addHabitUseCase(habit)
             } else {
-                habitsRepository.updateHabit(
+                updateHabitUseCase(
                     habit.copy(
                         id = passedHabit.id,
                     )

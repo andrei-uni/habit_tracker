@@ -5,7 +5,13 @@ plugins {
     id("com.google.devtools.ksp")
     id("androidx.room")
     kotlin("plugin.serialization") version "1.9.23"
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 android {
@@ -50,6 +56,9 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
 
     implementation(libs.kotlinx.serialization.json)
 

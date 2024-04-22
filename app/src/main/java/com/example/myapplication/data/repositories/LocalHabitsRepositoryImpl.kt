@@ -1,5 +1,6 @@
 package com.example.myapplication.data.repositories
 
+import com.example.myapplication.data.datasources.local.database.AppDatabase
 import com.example.myapplication.data.datasources.local.database.daos.HabitDao
 import com.example.myapplication.data.datasources.local.database.mappers.toDB
 import com.example.myapplication.data.datasources.local.database.mappers.toDbSynced
@@ -7,13 +8,14 @@ import com.example.myapplication.data.datasources.local.database.mappers.toDbUns
 import com.example.myapplication.data.datasources.local.database.mappers.toModels
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.repositories.LocalHabitsRepository
-import com.example.myapplication.utils.Dependencies
 import kotlinx.coroutines.flow.Flow
 
-class LocalHabitsRepositoryImpl : LocalHabitsRepository() {
+class LocalHabitsRepositoryImpl(
+    private val appDatabase: AppDatabase,
+) : LocalHabitsRepository() {
 
     private val habitDao: HabitDao by lazy {
-        Dependencies.appDatabase.habitDao()
+        appDatabase.habitDao()
     }
 
     override suspend fun getHabits(): Flow<List<Habit>> {

@@ -18,8 +18,7 @@ import androidx.core.content.res.ResourcesCompat.getDrawable
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
@@ -27,8 +26,11 @@ import com.example.myapplication.databinding.HabitAddFragmentBinding
 import com.example.myapplication.domain.models.HabitPriority
 import com.example.myapplication.domain.models.HabitType
 import com.example.myapplication.utils.isInt
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlin.math.pow
 
+@AndroidEntryPoint
 class HabitAddFragment : Fragment() {
 
     private var _binding: HabitAddFragmentBinding? = null
@@ -36,19 +38,15 @@ class HabitAddFragment : Fragment() {
 
     private val args: HabitAddFragmentArgs by navArgs()
 
-    private lateinit var viewModel: HabitAddViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val vm = HabitAddViewModel(args.habit).apply {
+    private val viewModel: HabitAddViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<HabitAddViewModelFactory> {
+                it.create(args.habit).apply {
                     setHabit()
                 }
-                return vm as T
             }
-        })[HabitAddViewModel::class.java]
-    }
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

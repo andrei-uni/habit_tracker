@@ -15,14 +15,22 @@ import com.example.myapplication.data.syncers.AddedHabitsSyncer
 import com.example.myapplication.data.syncers.UpdatedHabitsSyncer
 import com.example.myapplication.databinding.MainActivityBinding
 import com.example.myapplication.utils.Constants
-import com.example.myapplication.utils.Dependencies
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: MainActivityBinding
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    @Inject
+    lateinit var addedHabitsSyncer: AddedHabitsSyncer
+
+    @Inject
+    lateinit var updatedHabitsSyncer: UpdatedHabitsSyncer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         setAvatar()
 
-        Dependencies.init(applicationContext)
-
-        AddedHabitsSyncer.init()
-        UpdatedHabitsSyncer.init()
+        addedHabitsSyncer.init()
+        updatedHabitsSyncer.init()
     }
 
     private fun setupNavigation() {

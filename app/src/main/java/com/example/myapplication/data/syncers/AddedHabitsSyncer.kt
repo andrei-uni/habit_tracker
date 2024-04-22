@@ -3,8 +3,9 @@ package com.example.myapplication.data.syncers
 import com.example.myapplication.data.datasources.local.database.entities.HabitEntity
 import com.example.myapplication.data.datasources.local.database.mappers.toModel
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-object AddedHabitsSyncer : HabitsSyncer() {
+class AddedHabitsSyncer @Inject constructor() : HabitsSyncer() {
 
     override val unsyncedHabitsFlow: Flow<List<HabitEntity>> by lazy {
         habitDao.observeUnsyncedAdd()

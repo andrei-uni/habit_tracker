@@ -10,23 +10,23 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitNameFilter
 import com.example.myapplication.domain.models.HabitSort
-import com.example.myapplication.domain.repositories.HabitsRepository
-import com.example.myapplication.utils.Dependencies
+import com.example.myapplication.domain.usecases.GetHabitsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-
-class HabitsListViewModel : ViewModel() {
+@HiltViewModel
+class HabitsListViewModel @Inject constructor(
+    private val getHabitsUseCase: GetHabitsUseCase,
+    private val doHabitUseCase: DoHabitUseCase,
+) : ViewModel() {
 
     companion object {
         private val DEFAULT_HABIT_SORT = HabitSort.CREATION_DATE_NEWEST
 
         private val DEFAULT_HABIT_NAME_FILTER = HabitNameFilter("")
-    }
-
-    private val habitsRepository: HabitsRepository by lazy {
-        Dependencies.habitsRepository
     }
 
     private val habitSort = MutableLiveData<HabitSort>(DEFAULT_HABIT_SORT)
@@ -40,7 +40,7 @@ class HabitsListViewModel : ViewModel() {
 
         fun getHabits() {
             viewModelScope.launch(Dispatchers.IO) {
-                getHabitsLiveData = habitsRepository.getHabits().asLiveData()
+                getHabitsLiveData = getHabitsUseCase().asLiveData()
 
                 withContext(Dispatchers.Main) {
                     observe()
