@@ -14,6 +14,7 @@ fun HabitEntity.toModel(): Habit {
         frequencyInDays = frequencyInDays,
         color = color,
         lastEditDate = lastEditDate,
+        doneDates = doneDates,
     )
 }
 
@@ -28,6 +29,7 @@ fun Habit.toDB(syncedAdd: Int, syncedUpdate: Int): HabitEntity {
         frequencyInDays = frequencyInDays,
         color = color,
         lastEditDate = lastEditDate,
+        doneDates = doneDates,
         syncedAdd = syncedAdd,
         syncedUpdate = syncedUpdate,
     )

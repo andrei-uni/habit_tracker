@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "474bbcac012790c6d49e30673762b870",
+    "identityHash": "4d649cd5bce1a83b37a96d50ec7b0112",
     "entities": [
       {
         "tableName": "Habits",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `type` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `timesToComplete` INTEGER NOT NULL, `frequencyInDays` INTEGER NOT NULL, `color` INTEGER NOT NULL, `lastEditDate` INTEGER NOT NULL, `syncedAdd` INTEGER NOT NULL, `syncedUpdate` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `type` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `timesToComplete` INTEGER NOT NULL, `frequencyInDays` INTEGER NOT NULL, `color` INTEGER NOT NULL, `lastEditDate` INTEGER NOT NULL, `syncedAdd` INTEGER NOT NULL, `syncedUpdate` INTEGER NOT NULL, `doneDates` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -73,6 +73,12 @@
             "columnName": "syncedUpdate",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "doneDates",
+            "columnName": "doneDates",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -88,7 +94,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '474bbcac012790c6d49e30673762b870')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4d649cd5bce1a83b37a96d50ec7b0112')"
     ]
   }
 }

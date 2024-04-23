@@ -4,10 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitsListFragmentBinding
+import com.example.myapplication.domain.models.CompleteHabitResult
+import com.example.myapplication.domain.models.CompletionReached
+import com.example.myapplication.domain.models.CompletionUnreached
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitType
 import com.example.myapplication.presentation.habits_list_viewmodel.HabitsListViewModel
@@ -35,6 +40,8 @@ class HabitsListFragment : Fragment() {
 
     private lateinit var viewModel: HabitsListViewModel
 
+    private lateinit var habitsListAdapter: HabitsListAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,21 +59,59 @@ class HabitsListFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
 
-        val adapter = HabitsListAdapter(::onHabitClicked)
-        binding.habitsRecyclerView.adapter = adapter
+        habitsListAdapter = HabitsListAdapter(
+            onClick = ::onHabitClicked,
+            onCompleteClicked = ::onCompleteClicked,
+        )
+        binding.habitsRecyclerView.adapter = habitsListAdapter
 
+        setViewModelObservers()
+
+        viewModel.loadHabits()
+    }
+
+    private fun setViewModelObservers() {
         with(viewModel) {
             habits.observe(viewLifecycleOwner) { habits ->
-                adapter.setHabits(habits.filter { it.type == habitType })
+                habitsListAdapter.setHabits(habits.filter { it.type == habitType })
             }
 
-            loadHabits()
+            completeHabitResult.observe(viewLifecycleOwner) { pair ->
+                if (pair == null)
+                    return@observe
+
+                completeHabitResultChanged(pair.first, pair.second)
+            }
         }
     }
 
     private fun onHabitClicked(habit: Habit) {
         val directions = HomeFragmentDirections.navigateToHabitAdd(habit)
         findNavController().navigate(directions)
+    }
+
+    private fun onCompleteClicked(habit: Habit) {
+        viewModel.completeHabitClicked(habit)
+    }
+
+    private fun completeHabitResultChanged(habitResult: CompleteHabitResult, habit: Habit) {
+        val message = when (habitResult) {
+            CompletionReached -> {
+                getString(when (habit.type) {
+                    HabitType.GOOD -> R.string.youre_breathtaking
+                    HabitType.BAD -> R.string.stop_doing_that
+                })
+            }
+            is CompletionUnreached -> {
+                getString(when (habit.type) {
+                    HabitType.GOOD -> R.string.should_complete_x_times_more
+                    HabitType.BAD -> R.string.can_complete_x_times_more
+                }, habitResult.timesLeft)
+            }
+        }
+
+        Toast.makeText(activity, message, Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun onDestroyView() {

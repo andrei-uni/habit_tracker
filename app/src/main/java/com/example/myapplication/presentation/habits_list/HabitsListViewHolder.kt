@@ -11,7 +11,8 @@ import com.example.myapplication.domain.models.HabitType
 
 class HabitsListViewHolder(
     private val binding: HabitItemViewBinding,
-    private val onClick: onClick,
+    private val onClick: (Habit) -> Unit,
+    private val onCompleteClicked: (Habit) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(habit: Habit) {
@@ -38,7 +39,9 @@ class HabitsListViewHolder(
                 val type = context.getString(rString)
                 context.getString(R.string.habit_type, type)
             }
-            frequency.text = context.getString(R.string.once_in_days, habit.frequencyInDays.toString())
+            frequency.text = run {
+                context.getString(R.string.once_in_days, habit.frequencyInDays.toString())
+            }
 
             colorCircle.background = GradientDrawable().apply {
                 cornerRadius = 24f
@@ -46,6 +49,8 @@ class HabitsListViewHolder(
                 setStroke(3, Color.GRAY)
                 setColor(habit.color)
             }
+
+            completeButton.setOnClickListener { onCompleteClicked(habit) }
         }
     }
 }

@@ -3,7 +3,7 @@ package com.example.myapplication.data.syncers
 import com.example.myapplication.data.datasources.local.database.AppDatabase
 import com.example.myapplication.data.datasources.local.database.daos.HabitDao
 import com.example.myapplication.data.datasources.local.database.entities.HabitEntity
-import com.example.myapplication.domain.repositories.RemoteHabitsRepository
+import com.example.myapplication.data.datasources.remote.habits_service.HabitsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,7 +28,7 @@ abstract class HabitsSyncer : CoroutineScope {
         get() = Dispatchers.IO
 
     @Inject
-    lateinit var remoteHabitsRepository: RemoteHabitsRepository
+    lateinit var habitsService: HabitsService
 
     @Inject
     lateinit var appDatabase: AppDatabase

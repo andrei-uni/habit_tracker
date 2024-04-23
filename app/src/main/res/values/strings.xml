@@ -29,6 +29,11 @@
     <string name="search">Search</string>
     <string name="priority">Priority</string>
     <string name="user_avatar">User Avatar</string>
+    <string name="complete">complete</string>
+    <string name="youre_breathtaking" translatable="false">You\'re breathtaking!</string>
+    <string name="stop_doing_that">Stop doing that</string>
+    <string name="can_complete_x_times_more">Can complete %1$s times more</string>
+    <string name="should_complete_x_times_more">Should complete %1$s times more</string>
 
     <string-array name="habit_priorities">
         <item>@string/habit_priority_low</item>

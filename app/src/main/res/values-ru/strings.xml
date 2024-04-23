@@ -30,6 +30,11 @@
     <string name="search">Поиск</string>
     <string name="priority">Приоритет</string>
     <string name="user_avatar">Аватар пользователя</string>
+    <string name="complete">выполнить</string>
+    <string name="youre_breathtaking">You\'re breathtaking!</string>
+    <string name="stop_doing_that">Хватит это делать</string>
+    <string name="can_complete_x_times_more">Можете выполнить еще раз %1$s</string>
+    <string name="should_complete_x_times_more">Стоит выполнить еще раз %1$s</string>
 
     <string-array name="habit_priorities">
         <item>@string/habit_priority_low</item>

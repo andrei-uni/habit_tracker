@@ -15,6 +15,7 @@ fun HabitApi.toModel(): Habit {
         frequencyInDays = frequency,
         color = color,
         lastEditDate = Date(date),
+        doneDates = doneDates.map { Date(it) }
     )
 }
 
@@ -29,6 +30,6 @@ fun Habit.toApi(): HabitApi {
         frequency = frequencyInDays,
         color = color,
         date = lastEditDate.time,
-        doneDates = emptyList(), //TODO
+        doneDates = doneDates.map { it.time },
     )
 }

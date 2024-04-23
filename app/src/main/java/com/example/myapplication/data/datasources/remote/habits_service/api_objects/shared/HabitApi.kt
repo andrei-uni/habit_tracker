@@ -16,5 +16,5 @@ data class HabitApi(
     val count: Int,
     val color: Int,
     @SerialName("done_dates")
-    val doneDates: List<Int>,
+    val doneDates: List<Long>,
 )

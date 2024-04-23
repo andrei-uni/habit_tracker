@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.myapplication.data.datasources.local.database.converters.DateConverter
+import com.example.myapplication.data.datasources.local.database.converters.DateListConverter
 import com.example.myapplication.data.datasources.local.database.converters.HabitPriorityConverter
 import com.example.myapplication.data.datasources.local.database.converters.HabitTypeConverter
 import java.util.Date
@@ -13,6 +14,7 @@ import java.util.Date
     HabitTypeConverter::class,
     HabitPriorityConverter::class,
     DateConverter::class,
+    DateListConverter::class,
 )
 data class HabitEntity(
     @PrimaryKey val id: String,
@@ -26,4 +28,5 @@ data class HabitEntity(
     val lastEditDate: Date,
     val syncedAdd: Int,
     val syncedUpdate: Int,
+    val doneDates: List<Date>,
 )

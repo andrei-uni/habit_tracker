@@ -7,9 +7,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.domain.models.CompleteHabitResult
 import com.example.myapplication.domain.models.Habit
 import com.example.myapplication.domain.models.HabitNameFilter
 import com.example.myapplication.domain.models.HabitSort
+import com.example.myapplication.domain.usecases.CompleteHabitUseCase
 import com.example.myapplication.domain.usecases.GetHabitsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HabitsListViewModel @Inject constructor(
     private val getHabitsUseCase: GetHabitsUseCase,
-    private val doHabitUseCase: DoHabitUseCase,
+    private val completeHabitUseCase: CompleteHabitUseCase,
 ) : ViewModel() {
 
     companion object {
@@ -31,6 +33,9 @@ class HabitsListViewModel @Inject constructor(
 
     private val habitSort = MutableLiveData<HabitSort>(DEFAULT_HABIT_SORT)
     private val habitNameFilter = MutableLiveData<HabitNameFilter>(DEFAULT_HABIT_NAME_FILTER)
+    private val mutableCompleteHabitResult = MutableLiveData<Pair<CompleteHabitResult, Habit>?>()
+
+    val completeHabitResult: LiveData<Pair<CompleteHabitResult, Habit>?> = mutableCompleteHabitResult
 
     private val habitsFromRepo = MutableLiveData<List<Habit>>()
 
@@ -109,6 +114,17 @@ class HabitsListViewModel @Inject constructor(
 
     fun removeHabitNameFilter() {
         habitNameFilter.value = DEFAULT_HABIT_NAME_FILTER
+    }
+
+    fun completeHabitClicked(habit: Habit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val completeResult = completeHabitUseCase(habit)
+
+            withContext(Dispatchers.Main) {
+                mutableCompleteHabitResult.value = Pair(completeResult, habit)
+                mutableCompleteHabitResult.value = null
+            }
+        }
     }
 
     override fun onCleared() {

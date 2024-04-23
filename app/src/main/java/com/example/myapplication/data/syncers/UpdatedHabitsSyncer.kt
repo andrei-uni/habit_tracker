@@ -2,6 +2,7 @@ package com.example.myapplication.data.syncers
 
 import com.example.myapplication.data.datasources.local.database.entities.HabitEntity
 import com.example.myapplication.data.datasources.local.database.mappers.toModel
+import com.example.myapplication.data.datasources.remote.habits_service.mappers.toApi
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -14,7 +15,8 @@ class UpdatedHabitsSyncer @Inject constructor() : HabitsSyncer() {
     override suspend fun trySyncHabits(unsyncedHabits: List<HabitEntity>): Boolean {
         for (unsyncedHabit in unsyncedHabits) {
             try {
-                remoteHabitsRepository.updateHabit(unsyncedHabit.toModel())
+                val habitApi = unsyncedHabit.toModel().toApi()
+                habitsService.updateHabit(habitApi)
             } catch (e: Exception) {
                 return false
             }

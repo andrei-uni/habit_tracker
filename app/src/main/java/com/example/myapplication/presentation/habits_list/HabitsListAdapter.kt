@@ -8,10 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.HabitItemViewBinding
 import com.example.myapplication.domain.models.Habit
 
-typealias onClick = (habit: Habit) -> Unit
-
 class HabitsListAdapter(
-    private val onClick: onClick,
+    private val onClick: (Habit) -> Unit,
+    private val onCompleteClicked: (Habit) -> Unit,
 ) : RecyclerView.Adapter<HabitsListViewHolder>() {
 
     private val diffCallback = object : DiffUtil.ItemCallback<Habit>() {
@@ -34,7 +33,7 @@ class HabitsListAdapter(
         val binding = HabitItemViewBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return HabitsListViewHolder(binding, onClick)
+        return HabitsListViewHolder(binding, onClick, onCompleteClicked)
     }
 
     override fun onBindViewHolder(holder: HabitsListViewHolder, position: Int) {
