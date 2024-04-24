@@ -10,11 +10,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitsListFragmentBinding
-import com.example.myapplication.domain.models.CompleteHabitResult
-import com.example.myapplication.domain.models.CompletionReached
-import com.example.myapplication.domain.models.CompletionUnreached
-import com.example.myapplication.domain.models.Habit
-import com.example.myapplication.domain.models.HabitType
+import com.example.domain.models.CompleteHabitResult
+import com.example.domain.models.CompletionReached
+import com.example.domain.models.CompletionUnreached
+import com.example.domain.models.Habit
+import com.example.domain.models.HabitType
 import com.example.myapplication.presentation.habits_list_viewmodel.HabitsListViewModel
 import com.example.myapplication.presentation.home.HomeFragmentDirections
 import com.example.myapplication.utils.serializable

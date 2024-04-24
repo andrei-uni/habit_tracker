@@ -23,8 +23,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitAddFragmentBinding
-import com.example.myapplication.domain.models.HabitPriority
-import com.example.myapplication.domain.models.HabitType
+import com.example.domain.models.HabitPriority
+import com.example.domain.models.HabitType
 import com.example.myapplication.utils.isInt
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.withCreationCallback

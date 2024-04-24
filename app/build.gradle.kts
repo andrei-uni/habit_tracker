@@ -4,7 +4,6 @@ plugins {
     id("androidx.navigation.safeargs")
     id("com.google.devtools.ksp")
     id("androidx.room")
-    kotlin("plugin.serialization") version "1.9.23"
     id("com.google.dagger.hilt.android")
     kotlin("kapt")
 
@@ -57,6 +56,10 @@ android {
 
 dependencies {
 
+    implementation(project(":domain"))
+    implementation(project(":data"))
+    implementation(project(":constants"))
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
 
@@ -71,7 +74,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.core.ktx)

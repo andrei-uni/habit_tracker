@@ -23,7 +23,7 @@
         android:label="HabitAddFragment" >
         <argument
             android:name="habit"
-            app:argType="com.example.myapplication.domain.models.Habit"
+            app:argType="com.example.domain.models.Habit"
             app:nullable="true" />
     </fragment>
 

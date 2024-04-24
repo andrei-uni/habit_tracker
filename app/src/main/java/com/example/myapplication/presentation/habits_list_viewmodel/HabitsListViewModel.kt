@@ -7,12 +7,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.domain.models.CompleteHabitResult
-import com.example.myapplication.domain.models.Habit
-import com.example.myapplication.domain.models.HabitNameFilter
-import com.example.myapplication.domain.models.HabitSort
-import com.example.myapplication.domain.usecases.CompleteHabitUseCase
-import com.example.myapplication.domain.usecases.GetHabitsUseCase
+import com.example.domain.models.CompleteHabitResult
+import com.example.domain.models.Habit
+import com.example.domain.models.HabitNameFilter
+import com.example.domain.models.HabitSort
+import com.example.domain.usecases.CompleteHabitUseCase
+import com.example.domain.usecases.GetHabitsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +44,7 @@ class HabitsListViewModel @Inject constructor(
         private lateinit var getHabitsLiveData: LiveData<List<Habit>>
 
         fun getHabits() {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 getHabitsLiveData = getHabitsUseCase().asLiveData()
 
                 withContext(Dispatchers.Main) {
@@ -117,7 +117,7 @@ class HabitsListViewModel @Inject constructor(
     }
 
     fun completeHabitClicked(habit: Habit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val completeResult = completeHabitUseCase(habit)
 
             withContext(Dispatchers.Main) {

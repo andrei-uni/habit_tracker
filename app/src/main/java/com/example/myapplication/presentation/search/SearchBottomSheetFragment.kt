@@ -10,8 +10,8 @@ import android.widget.RadioGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.SearchBottomSheetFragmentBinding
-import com.example.myapplication.domain.models.HabitNameFilter
-import com.example.myapplication.domain.models.HabitSort
+import com.example.domain.models.HabitNameFilter
+import com.example.domain.models.HabitSort
 import com.example.myapplication.presentation.habits_list_viewmodel.HabitsListViewModel
 import com.example.myapplication.utils.hideKeyboard
 import com.example.myapplication.utils.showKeyboard

@@ -6,6 +6,7 @@ plugins {
     id("androidx.room") version "2.6.1" apply false
 
     kotlin("jvm") version "1.9.23"
+    alias(libs.plugins.androidLibrary) apply false
 }
 
 buildscript {

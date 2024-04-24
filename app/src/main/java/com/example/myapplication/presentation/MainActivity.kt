@@ -10,11 +10,11 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
+import com.example.constants.Constants
+import com.example.data.syncers.AddedHabitsSyncer
+import com.example.data.syncers.UpdatedHabitsSyncer
 import com.example.myapplication.R
-import com.example.myapplication.data.syncers.AddedHabitsSyncer
-import com.example.myapplication.data.syncers.UpdatedHabitsSyncer
 import com.example.myapplication.databinding.MainActivityBinding
-import com.example.myapplication.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

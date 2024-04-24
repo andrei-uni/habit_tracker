@@ -5,9 +5,9 @@ import android.graphics.drawable.GradientDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.HabitItemViewBinding
-import com.example.myapplication.domain.models.Habit
-import com.example.myapplication.domain.models.HabitPriority
-import com.example.myapplication.domain.models.HabitType
+import com.example.domain.models.Habit
+import com.example.domain.models.HabitPriority
+import com.example.domain.models.HabitType
 
 class HabitsListViewHolder(
     private val binding: HabitItemViewBinding,

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.HabitItemViewBinding
-import com.example.myapplication.domain.models.Habit
+import com.example.domain.models.Habit
 
 class HabitsListAdapter(
     private val onClick: (Habit) -> Unit,

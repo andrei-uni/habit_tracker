@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.domain.models.Habit
-import com.example.myapplication.domain.models.HabitPriority
-import com.example.myapplication.domain.models.HabitType
-import com.example.myapplication.domain.usecases.AddHabitUseCase
-import com.example.myapplication.domain.usecases.UpdateHabitUseCase
+import com.example.domain.models.Habit
+import com.example.domain.models.HabitPriority
+import com.example.domain.models.HabitType
+import com.example.domain.usecases.AddHabitUseCase
+import com.example.domain.usecases.UpdateHabitUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -103,7 +103,7 @@ class HabitAddViewModel @AssistedInject constructor(
             )
         } ?: return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (passedHabit == null) {
                 addHabitUseCase(habit)
             } else {

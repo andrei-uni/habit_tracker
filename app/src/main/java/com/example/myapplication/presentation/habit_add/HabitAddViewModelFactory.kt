@@ -1,6 +1,6 @@
 package com.example.myapplication.presentation.habit_add
 
-import com.example.myapplication.domain.models.Habit
+import com.example.domain.models.Habit
 import dagger.assisted.AssistedFactory
 
 @AssistedFactory
