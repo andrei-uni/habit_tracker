@@ -6,20 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.myapplication.R
-import com.example.myapplication.databinding.HabitsListFragmentBinding
 import com.example.domain.models.CompleteHabitResult
 import com.example.domain.models.CompletionReached
 import com.example.domain.models.CompletionUnreached
 import com.example.domain.models.Habit
 import com.example.domain.models.HabitType
+import com.example.myapplication.R
+import com.example.myapplication.databinding.HabitsListFragmentBinding
 import com.example.myapplication.presentation.habits_list_viewmodel.HabitsListViewModel
 import com.example.myapplication.presentation.home.HomeFragmentDirections
 import com.example.myapplication.utils.serializable
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class HabitsListFragment : Fragment() {
 
     companion object {
@@ -38,7 +39,7 @@ class HabitsListFragment : Fragment() {
     private var _binding: HabitsListFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: HabitsListViewModel
+    @Inject lateinit var viewModel: HabitsListViewModel
 
     private lateinit var habitsListAdapter: HabitsListAdapter
 
@@ -57,7 +58,7 @@ class HabitsListFragment : Fragment() {
             habitType = serializable<HabitType>(ARGS_HABIT_TYPE)!!
         }
 
-        viewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
+//        viewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
 
         habitsListAdapter = HabitsListAdapter(
             onClick = ::onHabitClicked,

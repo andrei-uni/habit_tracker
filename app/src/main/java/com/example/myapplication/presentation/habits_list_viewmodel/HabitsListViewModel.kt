@@ -13,17 +13,18 @@ import com.example.domain.models.HabitNameFilter
 import com.example.domain.models.HabitSort
 import com.example.domain.usecases.CompleteHabitUseCase
 import com.example.domain.usecases.GetHabitsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class HabitsListViewModel @Inject constructor(
+class HabitsListViewModel(
     private val getHabitsUseCase: GetHabitsUseCase,
     private val completeHabitUseCase: CompleteHabitUseCase,
 ) : ViewModel() {
+
+    init {
+        println("$this")
+    }
 
     companion object {
         private val DEFAULT_HABIT_SORT = HabitSort.CREATION_DATE_NEWEST
