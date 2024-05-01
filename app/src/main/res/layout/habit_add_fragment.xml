@@ -64,11 +64,13 @@
             android:layout_height="wrap_content">
 
             <RadioButton
+                android:id="@+id/type_radiogroup_btn_good"
                 android:text="@string/habit_type_good"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <RadioButton
+                android:id="@+id/type_radiogroup_btn_bad"
                 android:text="@string/habit_type_bad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

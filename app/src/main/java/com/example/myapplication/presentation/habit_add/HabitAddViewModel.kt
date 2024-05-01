@@ -3,7 +3,6 @@ package com.example.myapplication.presentation.habit_add
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.example.domain.models.Habit
 import com.example.domain.models.HabitPriority
@@ -31,12 +30,13 @@ class HabitAddViewModel @AssistedInject constructor(
     private val mutableIsFormValid: MutableLiveData<Boolean> = MutableLiveData()
     private val mutableIsFinished: MutableLiveData<Boolean> = MutableLiveData()
 
-    val habit: LiveData<Habit> = mutableHabit.distinctUntilChanged()
+    val habit: LiveData<Habit> = mutableHabit
     val isFormValid: LiveData<Boolean> = mutableIsFormValid
     val isFinished: LiveData<Boolean> = mutableIsFinished
 
     fun setHabit() {
         mutableHabit.value = passedHabit ?: Habit.empty
+        checkValidity()
     }
 
     fun nameChanged(name: String) {
@@ -91,10 +91,15 @@ class HabitAddViewModel @AssistedInject constructor(
                 return false
             if (habit.color == 0)
                 return false
+            if (habit == passedHabit)
+                return false
             return true
         }
 
     fun savePressed() {
+        if (isFormValid.value == null || !isFormValid.value!!)
+            return
+
         val habit = habit.value?.run {
             copy(
                 name = name.trim(),
